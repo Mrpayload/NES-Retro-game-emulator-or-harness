@@ -1656,7 +1656,9 @@
     .mobile-controls[data-layout="nes"][data-nes-input="drag"] .touch-dpad {
       grid-template-columns: 1fr;
       grid-template-rows: 130px;
-      width: min(46vw, var(--nes-drag-width, 210px))
+      width: var(--nes-drag-width, 30vw);
+      min-width: 110px;
+      max-width: 48vw
     }
 
     .mobile-controls[data-layout="nes"][data-nes-input="drag"] .touch-dpad .touch-btn {
@@ -4559,7 +4561,9 @@ body.landscape-active .touch-small {
       body.landscape-active .mobile-controls[data-layout="nes"][data-nes-input="drag"] .touch-dpad {
         grid-template-columns: 1fr;
         grid-template-rows: 130px;
-        width: min(28vw, var(--nes-drag-width, 210px))
+        width: var(--nes-drag-width, 26vw);
+        min-width: 110px;
+        max-width: min(36vw, 260px)
       }
 
       body.landscape-active .mobile-controls[data-layout="nes"][data-nes-input="drag"] .touch-dpad .touch-btn {
@@ -5205,7 +5209,7 @@ body.landscape-active .ss-icon {
         <label class="nes-slider">RETRY <input data-nes-size="sizeRetry" type="range" min="22" max="56" step="2"></label>
       </div>
       <div class="nes-control-row">
-        <label class="nes-slider">DRAG WIDTH <input data-nes-size="dragPadWidth" type="range" min="100" max="300" step="10"></label>
+        <label class="nes-slider">DRAG WIDTH <input data-nes-size="dragPadWidth" type="range" min="24" max="48" step="1"></label>
         <label class="nes-slider">FRAME <input data-nes-size="frameRadius" type="range" min="0" max="30" step="1"></label>
         <label class="nes-slider">FRAME SIZE <input data-nes-size="frameScale" type="range" min="50" max="150" step="5"></label>
         <label class="nes-slider">SCREEN <input id="nesScreenScaleRange" type="range" min="45" max="110" step="5"></label>
@@ -6193,7 +6197,11 @@ function resizeCanvas() {
     function isMobileControls() { return window.matchMedia('(pointer: coarse)').matches && (window.innerWidth <= 768 || isLandscapeMobile()); }
     function isNesGame(gameId) { return !!(customGames[gameId] && customGames[gameId].type === 'nes'); }
 
-    const NES_CONTROL_DEFAULTS = { dpad: 64, sizeA: 68, sizeB: 68, sizeSelect: 22, sizeStart: 22, sizePause: 22, sizeRetry: 22, screenScale: 100, gap: 10, opacity: 96, hand: 'right', turboA: false, turboB: false, inputMode: 'drag', showDragHints: true, palette: 'default', visualMode: 'classic', visualLevel: 'med', dragPadWidth: 210, frameRadius: 18, frameScale: 100 };
+    const NES_DRAG_WIDTH_RANGES = {
+      portrait: { min: 24, max: 48, step: 1, default: 30 },
+      landscape: { min: 20, max: 36, step: 1, default: 26 }
+    };
+    const NES_CONTROL_DEFAULTS = { dpad: 64, sizeA: 68, sizeB: 68, sizeSelect: 22, sizeStart: 22, sizePause: 22, sizeRetry: 22, screenScale: 100, gap: 10, opacity: 96, hand: 'right', turboA: false, turboB: false, inputMode: 'drag', showDragHints: true, palette: 'default', visualMode: 'classic', visualLevel: 'med', dragPadWidth: 30, dragPadWidthPortrait: 30, dragPadWidthLandscape: 26, frameRadius: 18, frameScale: 100 };
     const NES_CUSTOM_PRESET_KEY = 'chromaNesControlsCustomPreset';
     let activeNesControlSettings = { ...NES_CONTROL_DEFAULTS };
     let nesOptimizerOpen = false;
@@ -6222,6 +6230,23 @@ function resizeCanvas() {
       return current === 'low' ? 'med' : current === 'med' ? 'high' : 'low';
     }
 
+    function getNesDragOrientation() {
+      return isLandscapeMobile() ? 'landscape' : 'portrait';
+    }
+
+    function getNesDragWidthKey() {
+      return getNesDragOrientation() === 'landscape' ? 'dragPadWidthLandscape' : 'dragPadWidthPortrait';
+    }
+
+    function getNesDragWidthRange(orientation) {
+      return NES_DRAG_WIDTH_RANGES[orientation || getNesDragOrientation()] || NES_DRAG_WIDTH_RANGES.portrait;
+    }
+
+    function normalizeNesDragWidth(value, orientation, fallback) {
+      const range = getNesDragWidthRange(orientation);
+      return clampNumber(value, range.min, range.max, fallback === undefined ? range.default : fallback);
+    }
+
     function applyNesPaletteMode(nes, mode) {
       if (!nes || !nes.ppu || !nes.ppu.palTable) return;
       const ppu = nes.ppu;
@@ -6240,8 +6265,14 @@ function resizeCanvas() {
 
     function normalizeNesControlSettings(settings) {
       const base = NES_CONTROL_DEFAULTS;
-      const merged = { ...base, ...(settings || {}) };
+      const source = settings || {};
+      const merged = { ...base, ...source };
       const legacySize = clampNumber(merged.size, 30, 92, base.sizeA);
+      const rawLegacyDrag = Number(source.dragPadWidth);
+      const legacyDrag = Number.isFinite(rawLegacyDrag) && rawLegacyDrag <= 80 ? rawLegacyDrag : undefined;
+      const dragPadWidthPortrait = normalizeNesDragWidth(source.dragPadWidthPortrait === undefined ? legacyDrag : source.dragPadWidthPortrait, 'portrait', base.dragPadWidthPortrait);
+      const dragPadWidthLandscape = normalizeNesDragWidth(source.dragPadWidthLandscape === undefined ? legacyDrag : source.dragPadWidthLandscape, 'landscape', base.dragPadWidthLandscape);
+      const dragPadWidth = getNesDragOrientation() === 'landscape' ? dragPadWidthLandscape : dragPadWidthPortrait;
       return {
         dpad: clampNumber(merged.dpad, 30, 86, clampNumber(merged.size, 30, 86, base.dpad)),
         sizeA: clampNumber(merged.sizeA, 30, 92, legacySize),
@@ -6251,7 +6282,9 @@ function resizeCanvas() {
         sizePause: clampNumber(merged.sizePause, 22, 56, base.sizePause),
         sizeRetry: clampNumber(merged.sizeRetry, 22, 56, base.sizeRetry),
         screenScale: clampNumber(merged.screenScale, 45, 110, base.screenScale),
-        dragPadWidth: clampNumber(merged.dragPadWidth, 100, 300, base.dragPadWidth),
+        dragPadWidth,
+        dragPadWidthPortrait,
+        dragPadWidthLandscape,
         frameRadius: clampNumber(merged.frameRadius, 0, 30, base.frameRadius),
         frameScale: clampNumber(merged.frameScale, 50, 150, base.frameScale),
         gap: clampNumber(merged.gap, 0, 20, base.gap),
@@ -6275,7 +6308,7 @@ function resizeCanvas() {
     function loadNesControlSettings(gameId) {
       const perRom = readStoredJson('chromaNesControlsByRom', {});
       const key = currentNesControlKey(gameId);
-      return normalizeNesControlSettings({ ...NES_CONTROL_DEFAULTS, ...(perRom[key] || {}) });
+      return normalizeNesControlSettings(perRom[key] || {});
     }
 
     function saveNesControlSettings(gameId, settings) {
@@ -6374,6 +6407,9 @@ function resizeCanvas() {
 
     function applyNesControlSettings(settings, save) {
       activeNesControlSettings = normalizeNesControlSettings(settings);
+      const dragWidthKey = getNesDragWidthKey();
+      const dragWidthRange = getNesDragWidthRange();
+      const dragPadWidth = activeNesControlSettings[dragWidthKey];
       mobileControls.style.setProperty('--nes-dpad-size', activeNesControlSettings.dpad + 'px');
       mobileControls.style.setProperty('--nes-land-btn', Math.min(activeNesControlSettings.dpad, 68) + 'px');
       setNesActionSizeVar('a', activeNesControlSettings.sizeA, 66);
@@ -6384,7 +6420,7 @@ function resizeCanvas() {
       setNesSmallSizeVar('retry', activeNesControlSettings.sizeRetry, 42);
       mobileControls.style.setProperty('--nes-size-optimizer', Math.max(30, Math.min(42, activeNesControlSettings.sizeRetry)) + 'px');
       mobileControls.style.setProperty('--nes-width-optimizer', Math.max(100, activeNesControlSettings.sizePause + activeNesControlSettings.sizeRetry + activeNesControlSettings.gap + 34) + 'px');
-      mobileControls.style.setProperty('--nes-drag-width', activeNesControlSettings.dragPadWidth + 'px');
+      mobileControls.style.setProperty('--nes-drag-width', dragPadWidth + 'vw');
       applyNesFrameRadius(activeNesControlSettings.frameRadius);
       applyNesFrameScale(activeNesControlSettings.frameScale);
       mobileControls.style.setProperty('--nes-touch-gap', activeNesControlSettings.gap + 'px');
@@ -6392,7 +6428,14 @@ function resizeCanvas() {
       mobileControls.dataset.nesHand = activeNesControlSettings.hand;
       touchAction.classList.toggle('nes-turbo-on', activeNesControlSettings.turboA);
       touchNesB.classList.toggle('nes-turbo-on', activeNesControlSettings.turboB);
-      nesSizeRanges.forEach(input => { if (activeNesControlSettings[input.dataset.nesSize] !== undefined) input.value = activeNesControlSettings[input.dataset.nesSize]; });
+      nesSizeRanges.forEach(input => {
+        if (input.dataset.nesSize === 'dragPadWidth') {
+          input.min = dragWidthRange.min;
+          input.max = dragWidthRange.max;
+          input.step = dragWidthRange.step;
+          input.value = dragPadWidth;
+        } else if (activeNesControlSettings[input.dataset.nesSize] !== undefined) input.value = activeNesControlSettings[input.dataset.nesSize];
+      });
       if (nesScreenScaleRange) nesScreenScaleRange.value = activeNesControlSettings.screenScale;
       if (nesGapRange) nesGapRange.value = activeNesControlSettings.gap;
       if (nesOpacityRange) nesOpacityRange.value = activeNesControlSettings.opacity;
@@ -6436,6 +6479,11 @@ function resizeCanvas() {
     function updateCurrentNesControls(partial) {
       if (!isNesGame(currentGame)) return;
       applyNesControlSettings({ ...activeNesControlSettings, ...partial }, true);
+    }
+
+    function refreshNesControlOrientation() {
+      if (!isNesGame(currentGame)) return;
+      applyNesControlSettings(activeNesControlSettings, false);
     }
 
     const hapticPatterns = {
@@ -7158,10 +7206,20 @@ function resizeCanvas() {
       flashNesChip(nesResetControls, 'DEFAULT');
       haptic([22, 32, 22]);
     });
-    nesSizeRanges.forEach(input => input.addEventListener('input', () => updateCurrentNesControls({ [input.dataset.nesSize]: input.value })));
+    nesSizeRanges.forEach(input => input.addEventListener('input', () => {
+      if (input.dataset.nesSize === 'dragPadWidth') updateCurrentNesControls({ [getNesDragWidthKey()]: input.value });
+      else updateCurrentNesControls({ [input.dataset.nesSize]: input.value });
+    }));
     nesScreenScaleRange.addEventListener('input', () => updateCurrentNesControls({ screenScale: nesScreenScaleRange.value }));
     nesGapRange.addEventListener('input', () => updateCurrentNesControls({ gap: nesGapRange.value }));
     nesOpacityRange.addEventListener('input', () => updateCurrentNesControls({ opacity: nesOpacityRange.value }));
+    let nesDragOrientationTimer;
+    function scheduleNesControlOrientationRefresh(delay) {
+      clearTimeout(nesDragOrientationTimer);
+      nesDragOrientationTimer = setTimeout(refreshNesControlOrientation, delay || 160);
+    }
+    window.addEventListener('resize', () => scheduleNesControlOrientationRefresh(180));
+    window.addEventListener('orientationchange', () => scheduleNesControlOrientationRefresh(280));
 
     // desktop utils
     const deskAudio = document.getElementById('deskAudio');
@@ -7200,7 +7258,8 @@ function resizeCanvas() {
       setAddGameStatus('', false);
       addGameOverlay.classList.add('show');
       addGameOverlay.setAttribute('aria-hidden', 'false');
-      nesGameSearch.focus();
+      const coarsePointer = window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
+      if (!coarsePointer) nesGameSearch.focus();
     }
     function hideAddGame() { addGameOverlay.classList.remove('show'); addGameOverlay.setAttribute('aria-hidden', 'true'); }
 
@@ -7212,7 +7271,7 @@ function resizeCanvas() {
     function openNesGameSearch() {
       const raw = nesGameSearch.value.trim();
       const query = raw || 'NES homebrew ROM .nes legal download';
-      openExternalNesLink('https://www.romsgames.net/roms/nintendo/');
+      openExternalNesLink('https://search.brave.com/search?q=' + encodeURIComponent(query + ' NES ROM'));
     }
 
     function ensureNesCore() {
