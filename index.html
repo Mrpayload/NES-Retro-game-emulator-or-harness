@@ -4,18 +4,23 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <title>Retro Galaxy — Neon Arcade</title>
+  <title>NES Harness — Retro Arcade</title>
   <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@700;800&display=swap"
     rel="stylesheet">
   <style>
     :root {
+      --game-touch-size: clamp(54px, 15vw, 66px);
+      --game-touch-gap: clamp(8px, 2.1vw, 12px);
       --fluid-gap: clamp(7px, 1.8vw, 12px);
       --fluid-pad: clamp(8px, 2.2vw, 18px);
-      --touch-size: clamp(54px, 15vw, 66px);
-      --touch-gap: clamp(8px, 2.1vw, 12px);
+      --touch-size: var(--game-touch-size);
+      --touch-gap: var(--game-touch-gap);
       --panel-radius: clamp(14px, 3vw, 22px);
       --ui-font-sm: clamp(0.42rem, 1.55vw, 0.58rem);
-      --ui-font-md: clamp(0.62rem, 2.2vw, 0.92rem)
+      --ui-font-md: clamp(0.62rem, 2.2vw, 0.92rem);
+      --jump-button-pad-size: calc(var(--game-touch-size) + var(--game-touch-size) + var(--game-touch-size) + var(--game-touch-gap) + var(--game-touch-gap));
+      --shared-drag-pad-height: clamp(96px, 28vw, 132px);
+      --shared-drag-pad-land-height: clamp(120px, 34dvh, 156px)
     }
 
     * {
@@ -1148,16 +1153,6 @@
       cursor: none
     }
 
-    .shooter-options {
-      display: flex;
-      justify-content: center;
-      margin: 4px 0
-    }
-
-    .auto-fire-btn {
-      min-width: 116px
-    }
-
     body.galaxy-mode .utility-row {
       background: rgba(3, 7, 24, 0.55);
       border-color: rgba(77, 201, 246, 0.18)
@@ -1544,101 +1539,6 @@
       color: #aeefff
     }
 
-    .mobile-controls[data-layout="action"] {
-      align-items: stretch;
-      justify-content: space-between
-    }
-
-    .mobile-controls[data-layout="action"] .touch-dpad {
-      display: grid
-    }
-
-    .mobile-controls[data-layout="pad"] .touch-dpad {
-      display: grid
-    }
-
-    .mobile-controls[data-layout="pad"] .touch-dpad .touch-btn:not(.touch-action) {
-      display: none
-    }
-
-    .mobile-controls[data-layout="pad"] .touch-dpad .touch-action {
-      display: flex;
-      grid-column: 1 / -1;
-      grid-row: 1 / -1;
-      width: 100%;
-      height: 100%;
-      min-height: 0;
-      border-radius: 17px;
-      align-items: center;
-      justify-content: center
-    }
-
-    .mobile-controls[data-layout="aliens"] .touch-dpad .alien-drag-pad {
-      display: flex;
-      grid-column: 1 / -1;
-      grid-row: 1 / -1;
-      width: 100%;
-      height: 100%;
-      align-items: center;
-      justify-content: center;
-      min-height: 0;
-      border-radius: 17px;
-      touch-action: none;
-      user-select: none;
-      -webkit-user-select: none;
-      -webkit-tap-highlight-color: transparent
-    }
-
-    body:not(.landscape-active) .mobile-controls[data-layout="aliens"] {
-      flex-direction: column;
-      align-items: stretch;
-      justify-content: center;
-      gap: 8px
-    }
-
-    body:not(.landscape-active) .mobile-controls[data-layout="aliens"] .touch-dpad {
-      width: 100%;
-      grid-template-columns: 1fr;
-      grid-template-rows: clamp(96px, 28vw, 132px);
-      gap: 0
-    }
-
-    body:not(.landscape-active) .mobile-controls[data-layout="aliens"] .touch-dpad .touch-btn {
-      display: none
-    }
-
-    body:not(.landscape-active) .mobile-controls[data-layout="aliens"] .touch-actions {
-      width: 100%;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      grid-template-rows: clamp(42px, 11vw, 48px);
-      gap: 8px;
-      justify-content: stretch
-    }
-
-    body:not(.landscape-active) .mobile-controls[data-layout="aliens"] .touch-actions .touch-action {
-      display: none
-    }
-
-    body:not(.landscape-active) .mobile-controls[data-layout="aliens"] .touch-actions .touch-small {
-      height: 100%
-    }
-
-    .mobile-controls[data-layout="horizontal"] .touch-up,
-    .mobile-controls[data-layout="horizontal"] .touch-down {
-      visibility: hidden
-    }
-
-    .mobile-controls[data-layout="vertical"] .touch-left,
-    .mobile-controls[data-layout="vertical"] .touch-right {
-      visibility: hidden
-    }
-
-    .mobile-controls[data-layout="vertical"] .touch-action,
-    .mobile-controls[data-layout="horizontal"] .touch-action {
-      width: 62px;
-      height: 62px
-    }
-
     .mobile-controls[data-layout="nes"] {
       --touch-size: var(--nes-dpad-size, clamp(58px, 15vw, 68px));
       --touch-gap: var(--nes-touch-gap, clamp(8px, 2.5vw, 12px));
@@ -1653,12 +1553,27 @@
       justify-content: end
     }
 
-    .mobile-controls[data-layout="nes"][data-nes-input="drag"] .touch-dpad {
+    body:not(.landscape-active) .mobile-controls[data-layout="nes"][data-nes-input="drag"] .touch-dpad {
       grid-template-columns: 1fr;
-      grid-template-rows: 130px;
-      width: var(--nes-drag-width, 30vw);
-      min-width: 110px;
-      max-width: 48vw
+      grid-template-rows: 1fr;
+      width: var(--nes-drag-width, var(--jump-button-pad-size));
+      height: var(--nes-drag-width, var(--jump-button-pad-size));
+      min-width: 0;
+      max-width: var(--jump-button-pad-size);
+      max-height: var(--jump-button-pad-size);
+      align-self: center
+    }
+
+    body:not(.landscape-active) .mobile-controls[data-layout="nes"][data-nes-input="drag"] {
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      gap: calc(var(--touch-gap) + 2px)
+    }
+
+    body:not(.landscape-active) .mobile-controls[data-layout="nes"][data-nes-input="drag"] .touch-actions {
+      align-self: center;
+      justify-content: end
     }
 
     .mobile-controls[data-layout="nes"][data-nes-input="drag"] .touch-dpad .touch-btn {
@@ -2170,12 +2085,6 @@
         height: 54px
       }
 
-      .mobile-controls[data-layout="vertical"] .touch-action,
-      .mobile-controls[data-layout="horizontal"] .touch-action {
-        width: 54px;
-        height: 54px
-      }
-
       .touch-small {
         height: 44px
       }
@@ -2326,32 +2235,7 @@
     @media (pointer: fine) {
 
       /* A1 — Per-game active card border colors */
-      .game-card[data-game="snake"].active {
-        border-color: #2ecc71;
-        box-shadow: 0 0 20px rgba(46, 204, 113, 0.18);
-      }
-
-      .game-card[data-game="pong"].active {
-        border-color: #4dc9f6;
-        box-shadow: 0 0 20px rgba(77, 201, 246, 0.18);
-      }
-
-      .game-card[data-game="shooter"].active {
-        border-color: #ff6b9d;
-        box-shadow: 0 0 20px rgba(255, 107, 157, 0.18);
-      }
-
-      .game-card[data-game="dino"].active {
-        border-color: #ffdd4a;
-        box-shadow: 0 0 20px rgba(255, 221, 74, 0.18);
-      }
-
-      .game-card[data-game="breakout"].active {
-        border-color: #ff8c00;
-        box-shadow: 0 0 20px rgba(255, 140, 0, 0.18);
-      }
-
-      .game-card[data-game="flappy"].active {
+      .game-card[data-game="astro"].active {
         border-color: #ffdd4a;
         box-shadow: 0 0 20px rgba(255, 221, 74, 0.18);
       }
@@ -2394,32 +2278,7 @@
         transition: border-color 0.3s, box-shadow 0.3s;
       }
 
-      .instructions-panel.inst-snake {
-        border-color: rgba(46, 204, 113, 0.4);
-        box-shadow: 0 0 24px rgba(46, 204, 113, 0.12);
-      }
-
-      .instructions-panel.inst-pong {
-        border-color: rgba(77, 201, 246, 0.4);
-        box-shadow: 0 0 24px rgba(77, 201, 246, 0.12);
-      }
-
-      .instructions-panel.inst-shooter {
-        border-color: rgba(255, 107, 157, 0.4);
-        box-shadow: 0 0 24px rgba(255, 107, 157, 0.12);
-      }
-
-      .instructions-panel.inst-dino {
-        border-color: rgba(255, 221, 74, 0.4);
-        box-shadow: 0 0 24px rgba(255, 221, 74, 0.12);
-      }
-
-      .instructions-panel.inst-breakout {
-        border-color: rgba(255, 140, 0, 0.4);
-        box-shadow: 0 0 24px rgba(255, 140, 0, 0.12);
-      }
-
-      .instructions-panel.inst-flappy {
+      .instructions-panel.inst-astro {
         border-color: rgba(255, 221, 74, 0.4);
         box-shadow: 0 0 24px rgba(255, 221, 74, 0.12);
       }
@@ -4379,18 +4238,6 @@
         font-size: 0.5rem
       }
 
-      body.landscape-active .shooter-options {
-        margin: 1px 0 3px;
-        min-height: 0
-      }
-
-      body.landscape-active .auto-fire-btn {
-        min-width: 86px;
-        padding: 3px 9px;
-        font-size: 0.44rem;
-        line-height: 1
-      }
-
       body.landscape-active .char-picker {
         margin: 2px 0
       }
@@ -4449,16 +4296,6 @@ body.landscape-active .touch-action {
          font-size: 0.92rem
        }
 
-      body.landscape-active[data-game="shooter"] .touch-action {
-        width: min(120px, calc(var(--land-btn) + var(--land-btn) + var(--land-gap)));
-        height: min(clamp(64px, 16.5dvh, 80px), var(--land-btn));
-        border-radius: 28px;
-        font-size: 0.98rem;
-        grid-column: 1 / -1;
-        align-self: center;
-        justify-self: center
-      }
-
 body.landscape-active .touch-small {
           width: 100%;
           height: 100%;
@@ -4469,10 +4306,6 @@ body.landscape-active .touch-small {
          border-radius: 20px;
           letter-spacing: 0.15px
         }
-
-      body.landscape-active .mobile-controls:not([data-layout="nes"]) .nes-touch {
-        display: none
-      }
 
       body.landscape-active .mobile-controls[data-layout="nes"] .touch-actions {
         grid-template-columns: repeat(2, auto);
@@ -4554,16 +4387,12 @@ body.landscape-active .touch-small {
         width: 86px
       }
 
-      body.landscape-active .mobile-controls:not([data-layout="aliens"]) .alien-drag-pad {
-        display: none
-      }
-
       body.landscape-active .mobile-controls[data-layout="nes"][data-nes-input="drag"] .touch-dpad {
         grid-template-columns: 1fr;
-        grid-template-rows: 130px;
-        width: var(--nes-drag-width, 26vw);
+        grid-template-rows: var(--shared-drag-pad-land-height);
+        width: var(--nes-drag-width, 24vw);
         min-width: 110px;
-        max-width: min(36vw, 260px)
+        max-width: min(32vw, 260px)
       }
 
       body.landscape-active .mobile-controls[data-layout="nes"][data-nes-input="drag"] .touch-dpad .touch-btn {
@@ -4580,51 +4409,6 @@ body.landscape-active .touch-small {
         border-radius: 18px;
         align-items: center;
         justify-content: center
-      }
-
-      body.landscape-active .mobile-controls[data-layout="action"] .touch-dpad {
-        display: grid
-      }
-
-      body.landscape-active .mobile-controls[data-layout="pad"] .touch-dpad {
-        display: grid
-      }
-
-      body.landscape-active .mobile-controls[data-layout="pad"] .touch-dpad .touch-btn:not(.touch-action) {
-        display: none
-      }
-
-      body.landscape-active .mobile-controls[data-layout="pad"] .touch-dpad .touch-action {
-        display: flex;
-        grid-column: 1 / -1;
-        grid-row: 1 / -1;
-        width: 100%;
-        height: 100%;
-        min-height: 0;
-        border-radius: 18px;
-        font-size: 0.95rem;
-        align-items: center;
-        justify-content: center
-      }
-
-      body.landscape-active .mobile-controls[data-layout="aliens"] .touch-dpad .touch-btn {
-        display: none
-      }
-      body.landscape-active .mobile-controls[data-layout="aliens"] .touch-dpad .alien-drag-pad {
-        display: flex;
-        grid-column: 1 / -1;
-        grid-row: 1 / -1;
-        width: 100%;
-        height: 100%;
-        min-height: 0;
-        border-radius: 18px;
-        font-size: 0.78rem;
-        align-items: center;
-        justify-content: center;
-        touch-action: none;
-        user-select: none;
-        -webkit-user-select: none;
-        -webkit-tap-highlight-color: transparent
       }
 
       body.landscape-active .utility-row {
@@ -4793,6 +4577,10 @@ body.landscape-active .ss-icon {
     .add-game-overlay.show {
       opacity: 1;
       pointer-events: auto
+    }
+    .add-game-overlay.search-active {
+      align-items: flex-start;
+      padding-top: 4vh
     }
     .add-game-card {
       width: min(380px, 92vw);
@@ -5060,8 +4848,8 @@ body.landscape-active .ss-icon {
   <canvas id="cursorCanvas"></canvas>
 
   <div class="container">
-    <div class="title" id="mainTitle"><span class="title-logo">🕹</span>RETRO GALAXY<small>7 GAMES · COSMIC RETRO ARCADE
-        · NEON FUN</small></div>
+    <div class="title" id="mainTitle"><span class="title-logo">🕹</span>NES HARNESS<small>ASTRO RUNNER · ALIEN SLINGSHOT
+        · INSTALL NES ROMS</small></div>
 
     <div class="desktop-utils" id="desktopUtils">
       <button class="d-btn" id="deskAudio" aria-label="Audio">🔊 SND</button>
@@ -5069,7 +4857,7 @@ body.landscape-active .ss-icon {
       <button class="d-btn" id="deskSaver" aria-label="Battery Saver">⚡ SAVE</button>
       <button class="d-btn" id="deskFace" aria-label="Switch Website Face">◇ FACE</button>
       <button class="d-btn" id="deskLight" aria-label="Toggle Light Mode">☀ LIGHT</button>
-      <button class="d-btn is-about" id="deskAbout" aria-label="About Retro Galaxy">ℹ️ ABOUT</button>
+      <button class="d-btn is-about" id="deskAbout" aria-label="About NES Harness">ℹ️ ABOUT</button>
       <button class="d-btn" id="deskFullscreen" aria-label="Fullscreen">⛶ FULL</button>
     </div>
 
@@ -5078,24 +4866,16 @@ body.landscape-active .ss-icon {
         <div class="screen-border"></div>
         <div class="screen-inner">
           <canvas id="gameCanvas"></canvas>
-          <div class="game-hud"><span>SCORE: <em id="scoreDisplay">0</em></span><span id="gameNameDisplay">NEON
-              SNAKE</span><span>BEST: <em id="highScoreDisplay">0</em></span></div>
+          <div class="game-hud"><span>SCORE: <em id="scoreDisplay">0</em></span><span id="gameNameDisplay">ASTRO
+              RUNNER</span><span>BEST: <em id="highScoreDisplay">0</em></span></div>
           <div class="start-screen" id="startScreen">
-            <div class="ss-icon" id="ssIcon"><span id="ssIconText">🐍</span><canvas id="astroLogo" width="56"
+            <div class="ss-icon" id="ssIcon"><span id="ssIconText">👨‍🚀</span><canvas id="astroLogo" width="56"
                 height="56"></canvas></div>
-            <div class="ss-title" id="ssTitle">NEON SNAKE</div>
-            <div class="ss-inst" id="ssInst">Arrow Keys / WASD to move<br>Eat orbs to grow! Avoid walls<br>★ Golden orb
-              = +3 points!</div>
-            <div class="mode-toggle" id="modeToggle" style="display:none">
-              <button class="mode-btn active" data-mode="modern">MODERN</button>
-              <button class="mode-btn" data-mode="classic">CLASSIC</button>
-            </div>
+            <div class="ss-title" id="ssTitle">ASTRO RUNNER</div>
+            <div class="ss-inst" id="ssInst">SPACE / ↑ / W to jump<br>Dodge debris and collect stars<br>Power-ups keep the run alive</div>
             <div class="char-picker" id="charPicker" style="display:none">
               <div class="char-picker-label">CHARACTER</div>
               <div class="char-options" id="charOptions"></div>
-            </div>
-            <div class="shooter-options" id="shooterOptions" style="display:none">
-              <button class="mode-btn auto-fire-btn" id="autoFireBtn">AUTO FIRE OFF</button>
             </div>
             <div class="mobile-tip" id="mobileTip">Tip: FULL PLAY gives the cleanest mobile arcade view.</div>
             <div class="ss-actions">
@@ -5114,26 +4894,13 @@ body.landscape-active .ss-icon {
     </div>
 
     <div class="game-cards" id="gameCards">
-      <div class="game-card active" data-game="snake" data-key="1"><span class="gc-icon">🐍</span><span
-          class="gc-name">SNAKE</span>
-      </div>
-      <div class="game-card" data-game="pong" data-key="2"><span class="gc-icon">🏓</span><span
-          class="gc-name">PONG</span></div>
-      <div class="game-card" data-game="shooter" data-key="3"><span class="gc-icon">👾</span><span
-          class="gc-name">SHOOTER</span>
-      </div>
-      <div class="game-card" data-game="dino" data-key="4"><span class="gc-icon"><canvas id="astroLogoCard" width="26"
-            height="26"></canvas></span><span class="gc-name">ASTRO RUNNER</span></div>
-      <div class="game-card" data-game="breakout" data-key="5"><span class="gc-icon">🧱</span><span
-          class="gc-name">BREAKOUT</span>
-      </div>
-      <div class="game-card" data-game="flappy" data-key="6"><span class="gc-icon">🐤</span><span
-          class="gc-name">FLAPPY</span></div>
-      <div class="game-card" data-game="aliens" data-key="7"><span class="gc-icon">👽</span><span
-          class="gc-name">SLINGSHOT</span></div>
       <div class="game-card game-card-add" id="addGameCard"><span class="gc-icon">+</span><span
           class="gc-name">INSTALL NES</span></div>
-      <div class="gc-count" id="gcCount">7 GAMES ›</div>
+      <div class="game-card active" data-game="astro" data-key="1"><span class="gc-icon"><canvas id="astroLogoCard" width="26"
+            height="26"></canvas></span><span class="gc-name">ASTRO RUNNER</span></div>
+      <div class="game-card" data-game="aliens" data-key="2"><span class="gc-icon">👽</span><span
+          class="gc-name">SLINGSHOT</span></div>
+      <div class="gc-count" id="gcCount">2 BUILT-INS + NES ›</div>
     </div>
 
     <div class="stat-beads" id="statBeads">
@@ -5147,7 +4914,7 @@ body.landscape-active .ss-icon {
 
     <div class="instructions-panel" id="instPanel">
       <div class="inst-title">How to Play</div>
-      <div class="inst-text" id="instText">Arrow Keys / WASD to move<br>Eat orbs to grow! Don't hit walls</div>
+      <div class="inst-text" id="instText">SPACE / ↑ / W to jump<br>Dodge debris and collect stars</div>
     </div>
 
     <div class="mobile-quick-row">
@@ -5159,7 +4926,7 @@ body.landscape-active .ss-icon {
       <button class="quick-fullscreen" id="touchFullscreen" aria-label="Fullscreen">⛶</button>
     </div>
 
-    <div class="mobile-controls" id="mobileControls" data-layout="dpad">
+    <div class="mobile-controls" id="mobileControls" data-layout="nes">
       <div class="touch-dpad" id="touchDpad">
         <button class="touch-btn touch-up" data-touch-key="ArrowUp" aria-label="Up">▲</button>
         <button class="touch-btn touch-left" data-touch-key="ArrowLeft" aria-label="Left">◀</button>
@@ -5209,7 +4976,7 @@ body.landscape-active .ss-icon {
         <label class="nes-slider">RETRY <input data-nes-size="sizeRetry" type="range" min="22" max="56" step="2"></label>
       </div>
       <div class="nes-control-row">
-        <label class="nes-slider">DRAG WIDTH <input data-nes-size="dragPadWidth" type="range" min="24" max="48" step="1"></label>
+        <label class="nes-slider">DRAG WIDTH <input data-nes-size="dragPadWidth" type="range" min="70" max="100" step="1"></label>
         <label class="nes-slider">FRAME <input data-nes-size="frameRadius" type="range" min="0" max="30" step="1"></label>
         <label class="nes-slider">FRAME SIZE <input data-nes-size="frameScale" type="range" min="50" max="150" step="5"></label>
         <label class="nes-slider">SCREEN <input id="nesScreenScaleRange" type="range" min="45" max="110" step="5"></label>
@@ -5221,14 +4988,13 @@ body.landscape-active .ss-icon {
     <div class="utility-row" id="mobileUtility">
       <button class="util-btn" id="touchAudio" aria-label="Audio">SND</button>
       <button class="util-btn" id="touchGalaxy" aria-label="Visual Mode">NEBULA</button>
-      <button class="util-btn is-about" id="touchAbout" aria-label="About Retro Galaxy">ABOUT</button>
+      <button class="util-btn is-about" id="touchAbout" aria-label="About NES Harness">ABOUT</button>
     </div>
 
     <div class="about-overlay" id="aboutOverlay" aria-hidden="true">
       <div class="about-card">
-        <div class="about-title">RETRO GALAXY</div>
-        <div class="about-text">Retro Galaxy is a cosmic neon arcade with seven fast mini-games built for quick retro
-          fun.</div>
+        <div class="about-title">NES HARNESS</div>
+        <div class="about-text">A clean NES harness with Astro Runner, Alien Slingshot, and local NES ROM loading.</div>
         <div class="about-credit">Created by Vaishnav<br>vaishnavr1k@gmail.com</div>
         <button class="about-close" id="aboutClose">CLOSE</button>
       </div>
@@ -5237,7 +5003,7 @@ body.landscape-active .ss-icon {
     <div class="inst-help-overlay" id="instHelpOverlay" aria-hidden="true">
       <div class="inst-help-card">
         <div class="inst-help-title" id="instHelpTitle">HOW TO PLAY</div>
-        <div class="inst-help-body" id="instHelpBody">Arrow Keys / WASD to move<br>Eat orbs to grow! Don't hit walls
+        <div class="inst-help-body" id="instHelpBody">SPACE / ↑ / W to jump<br>Dodge debris and collect stars
         </div>
         <button class="inst-help-close" id="instHelpClose">GOT IT</button>
       </div>
@@ -5283,7 +5049,7 @@ body.landscape-active .ss-icon {
     </div>
 
     <div class="footer">
-      <span class="keycap">1</span>-<span class="keycap">7</span> SWITCH &middot; <span class="keycap">P</span> PAUSE
+      <span class="keycap">1</span>-<span class="keycap">2</span> BUILT-INS &middot; <span class="keycap">3</span>-<span class="keycap">0</span> NES ROMS &middot; <span class="keycap">P</span> PAUSE
       &middot; <span class="keycap">R</span> RESTART<br>
       CLICK ANYWHERE FOR ✦ SPARKS ✦
     </div>
@@ -5396,7 +5162,7 @@ body.landscape-active .ss-icon {
       stars: [],
       invaders: [],
       coins: [],
-      pongBalls: [],
+      bounceOrbs: [],
       particles: [],
       flashes: [],
       comboText: [],
@@ -5417,14 +5183,14 @@ body.landscape-active .ss-icon {
       const starCount = small ? 60 : 110;
       const invaderCount = small ? 5 : 9;
       const coinCount = small ? 4 : 7;
-      const pongCount = small ? 2 : 4;
-      retroState.stars = []; retroState.invaders = []; retroState.coins = []; retroState.pongBalls = [];
+      const bounceOrbCount = small ? 2 : 4;
+      retroState.stars = []; retroState.invaders = []; retroState.coins = []; retroState.bounceOrbs = [];
       for (let i = 0; i < starCount; i++) {
         retroState.stars.push({ x: Math.random() * retroW, y: Math.random() * retroH, z: 0.4 + Math.random() * 1.6, v: 8 + Math.random() * 22 });
       }
       for (let i = 0; i < invaderCount; i++)retroState.invaders.push(retroSpawnInvader(true));
       for (let i = 0; i < coinCount; i++)retroState.coins.push(retroSpawnCoin(true));
-      for (let i = 0; i < pongCount; i++)retroState.pongBalls.push(retroSpawnPong(true));
+      for (let i = 0; i < bounceOrbCount; i++)retroState.bounceOrbs.push(retroSpawnBounceOrb(true));
       const ghostCount = small ? 3 : 5;
       for (let i = 0; i < ghostCount; i++)retroState.ghosts.push(retroSpawnGhost(true));
       const tetroCount = small ? 2 : 4;
@@ -5452,7 +5218,7 @@ body.landscape-active .ss-icon {
         alive: true
       };
     }
-    function retroSpawnPong(initial) {
+    function retroSpawnBounceOrb(initial) {
       const laneY = (retroH * 0.2) + Math.random() * (retroH * 0.65);
       return {
         x: initial ? Math.random() * retroW : Math.random() > 0.5 ? 0 : retroW,
@@ -5571,7 +5337,7 @@ body.landscape-active .ss-icon {
         }
       });
 
-      retroState.pongBalls.forEach(pb => {
+      retroState.bounceOrbs.forEach(pb => {
         const dx = x - pb.x, dy = y - pb.y;
         if (Math.sqrt(dx * dx + dy * dy) < 10) {
           hit = true;
@@ -5638,14 +5404,14 @@ body.landscape-active .ss-icon {
         if (c.y > retroH * 0.8) { c.y = 20; c.x = 30 + Math.random() * (retroW - 60); }
       });
 
-      retroState.pongBalls.forEach(pb => {
+      retroState.bounceOrbs.forEach(pb => {
         pb.x += pb.vx * dt;
         pb.life -= dt * 0.12;
         pb.trail.push({ x: pb.x, y: pb.y, l: 0.55 });
         pb.trail.forEach(tr => tr.l -= dt * 1.3);
         pb.trail = pb.trail.filter(tr => tr.l > 0).slice(-18);
         if (pb.x < 0 || pb.x > retroW) pb.vx *= -1;
-        if (pb.life <= 0) Object.assign(pb, retroSpawnPong(false));
+        if (pb.life <= 0) Object.assign(pb, retroSpawnBounceOrb(false));
       });
 
       retroState.ghosts.forEach(g => {
@@ -5716,7 +5482,7 @@ body.landscape-active .ss-icon {
         retroCtx.fillRect(c.x - 1, c.y - c.r + 2, 2, c.r * 2 - 4);
       });
 
-      retroState.pongBalls.forEach(pb => {
+      retroState.bounceOrbs.forEach(pb => {
         pb.trail.forEach(tr => {
           retroCtx.fillStyle = `rgba(77,201,246,${tr.l * 0.18})`;
           retroCtx.beginPath(); retroCtx.arc(tr.x, tr.y, 3, 0, Math.PI * 2); retroCtx.fill();
@@ -5973,12 +5739,7 @@ if (isMinimalFaceActive()) {
 
     const bgSongs = {
       cosmic: { step: 420, notes: [[196, 0.7, 'sine', 0.014], [246.94, 0.55, 'triangle', 0.011], [329.63, 0.65, 'sine', 0.012], null, [392, 0.55, 'triangle', 0.01], [329.63, 0.7, 'sine', 0.012], [246.94, 0.6, 'triangle', 0.01], null, [220, 0.8, 'sine', 0.013], [277.18, 0.55, 'triangle', 0.011], [349.23, 0.65, 'sine', 0.012], null], bass: [[49, 1.2, 'sine', 0.012], null, null, null, [65.41, 1.1, 'sine', 0.011], null, null, null, [55, 1.2, 'sine', 0.012], null, null, null] },
-      snake: { step: 145, notes: [[392, 0.11, 'triangle', 0.018], [523.25, 0.09, 'sine', 0.014], [659.25, 0.11, 'triangle', 0.018], [783.99, 0.08, 'sine', 0.012], [659.25, 0.1, 'triangle', 0.016], [523.25, 0.08, 'sine', 0.012], [440, 0.11, 'triangle', 0.018], [329.63, 0.1, 'sine', 0.014]], bass: [[98, 0.18, 'sine', 0.012], null, null, null, [123.47, 0.16, 'sine', 0.012], null, null, null] },
-      pong: { step: 170, notes: [[261.63, 0.07, 'square', 0.015], null, [392, 0.06, 'square', 0.016], null, [329.63, 0.07, 'square', 0.015], null, [523.25, 0.06, 'square', 0.016], null], bass: [[130.81, 0.12, 'triangle', 0.012], null, [196, 0.1, 'triangle', 0.01], null, [164.81, 0.12, 'triangle', 0.012], null, [261.63, 0.1, 'triangle', 0.01], null] },
-      shooter: { step: 115, notes: [[220, 0.08, 'sawtooth', 0.014], [220, 0.06, 'square', 0.012], [329.63, 0.08, 'sawtooth', 0.015], [440, 0.06, 'square', 0.012], [493.88, 0.08, 'sawtooth', 0.015], [440, 0.06, 'square', 0.012], [329.63, 0.08, 'sawtooth', 0.015], [277.18, 0.07, 'square', 0.012]], bass: [[55, 0.2, 'square', 0.01], null, null, null, [73.42, 0.18, 'square', 0.01], null, null, null] },
-      dino: { step: 135, notes: [[329.63, 0.08, 'triangle', 0.016], [392, 0.08, 'triangle', 0.016], [493.88, 0.08, 'triangle', 0.017], null, [587.33, 0.09, 'triangle', 0.018], [493.88, 0.07, 'triangle', 0.015], [392, 0.08, 'triangle', 0.016], null], bass: [[82.41, 0.13, 'sine', 0.011], null, [98, 0.12, 'sine', 0.011], null, [110, 0.13, 'sine', 0.011], null, [98, 0.12, 'sine', 0.011], null] },
-      breakout: { step: 155, notes: [[523.25, 0.1, 'sine', 0.017], [659.25, 0.09, 'triangle', 0.015], [783.99, 0.1, 'sine', 0.017], [1046.5, 0.08, 'triangle', 0.014], [880, 0.1, 'sine', 0.016], [783.99, 0.08, 'triangle', 0.014], [659.25, 0.1, 'sine', 0.016], [587.33, 0.08, 'triangle', 0.014]], bass: [[130.81, 0.2, 'triangle', 0.011], null, null, null, [146.83, 0.18, 'triangle', 0.011], null, null, null] },
-      flappy: { step: 155, notes: [[783.99, 0.07, 'sine', 0.012], null, [987.77, 0.06, 'triangle', 0.012], [880, 0.07, 'sine', 0.011], null, [1174.66, 0.06, 'triangle', 0.012], [987.77, 0.08, 'sine', 0.011], null, [659.25, 0.07, 'triangle', 0.01], null, [783.99, 0.06, 'sine', 0.011], null], bass: [[196, 0.1, 'sine', 0.007], null, null, null, [246.94, 0.09, 'sine', 0.007], null, null, null, [220, 0.09, 'sine', 0.007], null, null, null] },
+      astro: { step: 135, notes: [[329.63, 0.08, 'triangle', 0.016], [392, 0.08, 'triangle', 0.016], [493.88, 0.08, 'triangle', 0.017], null, [587.33, 0.09, 'triangle', 0.018], [493.88, 0.07, 'triangle', 0.015], [392, 0.08, 'triangle', 0.016], null], bass: [[82.41, 0.13, 'sine', 0.011], null, [98, 0.12, 'sine', 0.011], null, [110, 0.13, 'sine', 0.011], null, [98, 0.12, 'sine', 0.011], null] },
       aliens: { step: 160, notes: [[220, 0.12, 'sawtooth', 0.012], [277.18, 0.08, 'triangle', 0.01], [329.63, 0.12, 'sawtooth', 0.012], [440, 0.08, 'triangle', 0.01], [329.63, 0.1, 'sawtooth', 0.011], [277.18, 0.08, 'triangle', 0.01], [246.94, 0.12, 'sawtooth', 0.012], [220, 0.08, 'triangle', 0.01]], bass: [[55, 0.25, 'square', 0.01], null, null, [73.42, 0.2, 'square', 0.008], null, null, [65.41, 0.22, 'square', 0.009], null] }
     };
     let bgMusicTimer = null, bgMusicToken = 0, bgMusicGain = null, bgMusicName = null, siteAudioUnlocked = false, pageFocused = true;
@@ -6035,12 +5796,7 @@ if (isMinimalFaceActive()) {
     }
 
     const gameStartTunes = {
-      snake: [[523.25, 0.035, 0.06, 0], [659.25, 0.04, 0.06, 70], [783.99, 0.045, 0.08, 150]],
-      pong: [[261.63, 0.04, 0.05, 0], [392, 0.04, 0.05, 90], [523.25, 0.045, 0.07, 180]],
-      shooter: [[220, 0.045, 0.05, 0], [440, 0.05, 0.05, 80], [880, 0.05, 0.08, 160]],
-      dino: [[329.63, 0.04, 0.05, 0], [493.88, 0.04, 0.05, 90], [659.25, 0.045, 0.08, 180]],
-      breakout: [[523.25, 0.04, 0.05, 0], [783.99, 0.04, 0.05, 75], [1046.5, 0.045, 0.08, 160]],
-      flappy: [[783.99, 0.035, 0.05, 0], [987.77, 0.035, 0.05, 85], [1174.66, 0.04, 0.08, 170]],
+      astro: [[329.63, 0.04, 0.05, 0], [493.88, 0.04, 0.05, 90], [659.25, 0.045, 0.08, 180]],
       aliens: [[220, 0.04, 0.06, 0], [440, 0.04, 0.06, 80], [880, 0.05, 0.09, 160]]
     };
     function playGameStartSound(game) {
@@ -6100,7 +5856,6 @@ if (isMinimalFaceActive()) {
     const touchGalaxy = document.getElementById('touchGalaxy');
     const touchSaver = document.getElementById('touchSaver');
     const touchAbout = document.getElementById('touchAbout');
-    const autoFireBtn = document.getElementById('autoFireBtn');
     const aboutOverlay = document.getElementById('aboutOverlay');
     const aboutClose = document.getElementById('aboutClose');
     const instHelpBtn = document.getElementById('instHelpBtn');
@@ -6140,12 +5895,9 @@ function resizeCanvas() {
     function handleViewportChange() { resizeCanvas(); refreshInstructionText(); }
     resizeCanvas(); let resizeTimer; window.addEventListener('resize', () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(handleViewportChange, 120); }); window.addEventListener('orientationchange', () => { setTimeout(handleViewportChange, 220); });
 
-    let currentGame = 'snake', gameLoop = null, cleanup = null, paused = false, gameActive = false;
+    let currentGame = 'astro', gameLoop = null, cleanup = null, paused = false, gameActive = false;
+    document.body.dataset.game = currentGame;
     let keys = {}, score = 0;
-    let shooterTouch = { active: false, x: 0, y: 0, fire: false };
-    let breakoutTouch = { active: false, x: 0 };
-    let snakeClassic = readStoredFlag('chromaSnakeClassic');
-    let shooterAutoFire = readStoredFlag('chromaShooterAutoFire');
     let highScores = readStoredJson('chromaScores', {});
     let selectedAstroChar = (() => { try { const v = localStorage.getItem('chromaAstroChar'); return ['astro', 'nova', 'cosmo', 'orbit'].includes(v) ? v : 'astro'; } catch (e) { return 'astro'; } })();
     let lastTime = 0, cursorTime = 0, lastHapticAt = 0;
@@ -6163,17 +5915,14 @@ function resizeCanvas() {
     let activeNesRuntime = null;
 
     const gameInfo = {
-      snake: { name: 'NEON SNAKE', icon: '🐍', inst: 'Arrow Keys / WASD to move\nEat food to grow! Avoid walls & yourself\n★ +3 Bonus  \u{1F7E2} Shrink  \u{1FAB8} Ghost  \u{1F49C} +5 Bomb' },
-      pong: { name: 'COSMIC PONG', icon: '🏓', inst: '↑↓ / W S to move paddle\nFirst to 5 wins! Ball speeds up\nAngle changes on paddle hit' },
-      shooter: { name: 'GALAXY SHOOTER', icon: '👾', inst: 'Arrow Keys / WASD to move\nSPACE to shoot • F toggles AUTO FIRE\nPower-ups: RAPID, SPREAD, SHIELD, BOMB, LIFE' },
-      dino: { name: 'ASTRO RUNNER', icon: '👨‍🚀', inst: 'SPACE / ↑ / W to jump\nDodge debris & birds\nCollect stars for bonus points!\nPower-ups: SHIELD, MAGNET, BOOST, SLOWMO' },
-      breakout: { name: 'CRYSTAL BREAKOUT', icon: '🧱', inst: '← → / A D to move paddle\nBreak all crystals to win!\n3 lives • Ball speeds up' },
-      flappy: { name: 'RAINBOW BIRD', icon: '🐤', inst: 'SPACE / ↑ / W to flap\nFly through pipe gaps\nDon\'t hit pipes or ground!' },
-      aliens: { name: 'ALIEN SLINGSHOT', icon: '👽', inst: 'DRAG & RELEASE on screen to launch aliens!\n4 ALIEN TYPES with unique physics\nDestroy all enemy pods to clear the level!' }
+      astro: { name: 'ASTRO RUNNER', icon: '👨‍🚀', inst: 'DPAD / Arrow keys to move\nA / Space / ↑ / W to jump\nDodge debris & birds\nCollect stars for bonus points!\nPower-ups: SHIELD, MAGNET, BOOST, SLOWMO' },
+      aliens: { name: 'ALIEN SLINGSHOT', icon: '👽', inst: 'DRAG PAD to aim & release to launch\nA / Space to fire at 75°\nB / Z to cycle alien type\n4 ALIEN TYPES with unique physics\nDestroy all enemy pods to clear the level!' }
     };
 
-    const mobileLayouts = { snake: 'dpad', pong: 'vertical', shooter: 'dpad', dino: 'pad', breakout: 'horizontal', flappy: 'pad', aliens: 'aliens' };
-    const mobileActionText = { snake: 'A', pong: 'A', shooter: 'FIRE', dino: 'JUMP', breakout: 'A', flappy: 'FLAP', aliens: 'DRAG' };
+    const mobileActionText = { astro: 'A', aliens: 'A' };
+    function hasNesFeatures() {
+      return true;
+    }
     const touchAliases = { ArrowUp: ['ArrowUp', 'w', 'up'], ArrowDown: ['ArrowDown', 's', 'down'], ArrowLeft: ['ArrowLeft', 'a', 'left'], ArrowRight: ['ArrowRight', 'd', 'right'], ' ': [' '] };
 
     const astroCharacters = [
@@ -6185,23 +5934,18 @@ function resizeCanvas() {
     function getAstroChar() { return astroCharacters.find(c => c.id === selectedAstroChar) || astroCharacters[0]; }
 
     const mobileInst = {
-      snake: 'Use the D-pad to move<br>Eat food to grow! Avoid walls & yourself<br>★ +3 Bonus &nbsp;🟢 Shrink &nbsp;👻 Ghost &nbsp;💜 +5 Bomb',
-      pong: 'Use ↑ ↓ buttons to move paddle<br>First to 5 wins! Ball speeds up',
-      shooter: 'Drag inside the game to move anywhere<br>Hold FIRE or enable AUTO FIRE<br>Collect power-ups and clear each stage!',
-      dino: 'Tap JUMP or the game to jump<br>Dodge cacti & birds<br>Collect stars for bonus +25 points!<br>Power-ups: SHIELD, MAGNET, BOOST, SLOWMO',
-      breakout: 'Drag on the game or use ← → buttons<br>Break all crystals to win!<br>3 lives • Ball speeds up',
-      flappy: 'Tap FLAP or the game to flap<br>Fly through pipe gaps<br>Don\'t hit pipes or ground!',
-      aliens: 'Use the DRAG PAD like a mouse pad<br>Hold, drag, and release to launch aliens<br>4 ALIEN TYPES with unique physics!'
+      astro: 'Use DPAD or DRAG to move<br>A button to jump<br>Dodge debris & birds<br>Collect stars for bonus +25 points!<br>Power-ups: SHIELD, MAGNET, BOOST, SLOWMO',
+      aliens: 'Use the DRAG PAD to aim & launch<br>A button fires at 75° • B cycles alien type<br>4 ALIEN TYPES with unique physics!'
     };
 
     function isMobileControls() { return window.matchMedia('(pointer: coarse)').matches && (window.innerWidth <= 768 || isLandscapeMobile()); }
     function isNesGame(gameId) { return !!(customGames[gameId] && customGames[gameId].type === 'nes'); }
 
     const NES_DRAG_WIDTH_RANGES = {
-      portrait: { min: 24, max: 48, step: 1, default: 30 },
-      landscape: { min: 20, max: 36, step: 1, default: 26 }
+      portrait: { min: 70, max: 100, step: 1, default: 100, unit: "%" },
+      landscape: { min: 20, max: 32, step: 1, default: 24, unit: "vw" }
     };
-    const NES_CONTROL_DEFAULTS = { dpad: 64, sizeA: 68, sizeB: 68, sizeSelect: 22, sizeStart: 22, sizePause: 22, sizeRetry: 22, screenScale: 100, gap: 10, opacity: 96, hand: 'right', turboA: false, turboB: false, inputMode: 'drag', showDragHints: true, palette: 'default', visualMode: 'classic', visualLevel: 'med', dragPadWidth: 30, dragPadWidthPortrait: 30, dragPadWidthLandscape: 26, frameRadius: 18, frameScale: 100 };
+    const NES_CONTROL_DEFAULTS = { dpad: 64, sizeA: 68, sizeB: 68, sizeSelect: 22, sizeStart: 22, sizePause: 22, sizeRetry: 22, screenScale: 100, gap: 10, opacity: 96, hand: 'right', turboA: false, turboB: false, inputMode: 'drag', showDragHints: true, palette: 'default', visualMode: 'classic', visualLevel: 'med', dragPadWidth: 100, dragPadWidthPortrait: 100, dragPadWidthLandscape: 24, frameRadius: 18, frameScale: 100 };
     const NES_CUSTOM_PRESET_KEY = 'chromaNesControlsCustomPreset';
     let activeNesControlSettings = { ...NES_CONTROL_DEFAULTS };
     let nesOptimizerOpen = false;
@@ -6242,9 +5986,24 @@ function resizeCanvas() {
       return NES_DRAG_WIDTH_RANGES[orientation || getNesDragOrientation()] || NES_DRAG_WIDTH_RANGES.portrait;
     }
 
+    function getGameJumpPadSize() {
+      const viewportWidth = window.innerWidth || document.documentElement.clientWidth || 360;
+      const touchSize = clampNumber(viewportWidth * 0.15, 54, 66, 54);
+      const touchGap = clampNumber(viewportWidth * 0.021, 8, 12, 8);
+      return Math.round(touchSize * 3 + touchGap * 2);
+    }
+
+    function getNesDragCssWidth(value, range) {
+      if (range.unit === '%') return Math.round(getGameJumpPadSize() * (value / 100)) + 'px';
+      return value + range.unit;
+    }
+
     function normalizeNesDragWidth(value, orientation, fallback) {
       const range = getNesDragWidthRange(orientation);
-      return clampNumber(value, range.min, range.max, fallback === undefined ? range.default : fallback);
+      const fallbackValue = fallback === undefined ? range.default : fallback;
+      const n = Number(value);
+      if (!Number.isFinite(n) || n < range.min || n > range.max) return fallbackValue;
+      return n;
     }
 
     function applyNesPaletteMode(nes, mode) {
@@ -6362,7 +6121,7 @@ function resizeCanvas() {
     }
 
     function setNesOptimizerOpen(open) {
-      const show = !!open && isNesGame(currentGame);
+      const show = !!open && hasNesFeatures();
       nesOptimizerOpen = show;
       nesControlPanel.classList.toggle('show', show);
       nesControlPanel.setAttribute('aria-hidden', show ? 'false' : 'true');
@@ -6385,7 +6144,7 @@ function resizeCanvas() {
     }
 
     function isNesDragInputActive() {
-      return isNesGame(currentGame) && activeNesControlSettings.inputMode === 'drag';
+      return hasNesFeatures() && activeNesControlSettings.inputMode === 'drag';
     }
 
     function applyNesInputModeLayout() {
@@ -6420,7 +6179,7 @@ function resizeCanvas() {
       setNesSmallSizeVar('retry', activeNesControlSettings.sizeRetry, 42);
       mobileControls.style.setProperty('--nes-size-optimizer', Math.max(30, Math.min(42, activeNesControlSettings.sizeRetry)) + 'px');
       mobileControls.style.setProperty('--nes-width-optimizer', Math.max(100, activeNesControlSettings.sizePause + activeNesControlSettings.sizeRetry + activeNesControlSettings.gap + 34) + 'px');
-      mobileControls.style.setProperty('--nes-drag-width', dragPadWidth + 'vw');
+      mobileControls.style.setProperty('--nes-drag-width', getNesDragCssWidth(dragPadWidth, dragWidthRange));
       applyNesFrameRadius(activeNesControlSettings.frameRadius);
       applyNesFrameScale(activeNesControlSettings.frameScale);
       mobileControls.style.setProperty('--nes-touch-gap', activeNesControlSettings.gap + 'px');
@@ -6450,18 +6209,18 @@ function resizeCanvas() {
       nesVisualLevelToggle.textContent = 'MODERN: ' + activeNesControlSettings.visualLevel.toUpperCase();
       nesVisualLevelToggle.classList.toggle('active', activeNesControlSettings.visualMode === 'modern');
       applyNesInputModeLayout();
-      if (activeNesRuntime && activeNesRuntime.gameId === currentGame) applyNesPaletteMode(activeNesRuntime.nes, activeNesControlSettings.palette);
-      if (save && isNesGame(currentGame)) saveNesControlSettings(currentGame, activeNesControlSettings);
+      if (isNesGame(currentGame) && activeNesRuntime && activeNesRuntime.gameId === currentGame) applyNesPaletteMode(activeNesRuntime.nes, activeNesControlSettings.palette);
+      if (save && hasNesFeatures()) saveNesControlSettings(currentGame, activeNesControlSettings);
     }
 
     function updateNesControlPanel() {
-      const show = isNesGame(currentGame);
+      const show = hasNesFeatures();
       if (show) applyNesControlSettings(loadNesControlSettings(currentGame), false);
       else {
         mobileControls.removeAttribute('data-nes-hand');
         mobileControls.removeAttribute('data-nes-input');
         mobileControls.removeAttribute('data-nes-hints');
-        if ((mobileLayouts[currentGame] || 'dpad') !== 'aliens') returnDragPadToActions();
+        returnDragPadToActions();
         clearNesDragMovement();
         touchAction.classList.remove('nes-turbo-on');
         touchNesB.classList.remove('nes-turbo-on');
@@ -6477,23 +6236,18 @@ function resizeCanvas() {
     }
 
     function updateCurrentNesControls(partial) {
-      if (!isNesGame(currentGame)) return;
+      if (!hasNesFeatures()) return;
       applyNesControlSettings({ ...activeNesControlSettings, ...partial }, true);
     }
 
     function refreshNesControlOrientation() {
-      if (!isNesGame(currentGame)) return;
+      if (!hasNesFeatures()) return;
       applyNesControlSettings(activeNesControlSettings, false);
     }
 
     const hapticPatterns = {
       move: 16,
-      snakeAction: 22,
-      pongAction: 20,
-      shooterAction: [24, 36, 24],
-      dinoAction: 30,
-      breakoutAction: 20,
-      flappyAction: 28,
+      astroAction: 30,
       pause: [34, 52, 34],
       restart: 48,
       fullscreen: [28, 38, 28],
@@ -6508,7 +6262,7 @@ function resizeCanvas() {
       try { navigator.vibrate(pattern); } catch (e) { }
     }
     function hapticForTouchKey(key) {
-      if (key === ' ' || (isNesGame(currentGame) && String(key).indexOf('nes') === 0)) haptic(hapticPatterns[currentGame + 'Action'] || 18);
+      if (key === ' ' || (hasNesFeatures() && String(key).indexOf('nes') === 0)) haptic(hapticPatterns[currentGame + 'Action'] || 18);
       else haptic(hapticPatterns.move);
     }
     function hapticEvent(pattern, gap) {
@@ -6520,18 +6274,10 @@ function resizeCanvas() {
     }
 
     function updateMobileControls() {
-      const layout = mobileLayouts[currentGame] || 'dpad';
-      mobileControls.dataset.layout = layout;
-      document.body.dataset.mobileLayout = layout;
+      mobileControls.dataset.layout = 'nes';
 
       if (touchActions.children.length === 0 || touchActions.children[0] !== touchAction) {
         touchActions.append(touchAction, touchNesB, touchNesSelect, touchNesStart, nesOptimizerToggle, alienDragPad, touchPause, touchRestart);
-      }
-
-      if (layout === 'action' || layout === 'pad') {
-        if (touchAction.parentElement !== touchDpad) touchDpad.appendChild(touchAction);
-      } else if (layout === 'aliens') {
-        if (alienDragPad.parentElement !== touchDpad) touchDpad.appendChild(alienDragPad);
       }
 
       touchAction.textContent = mobileActionText[currentGame] || 'A';
@@ -6545,28 +6291,9 @@ function resizeCanvas() {
 
     function clearInputState() {
       keys = {};
-      shooterTouch = { active: false, x: 0, y: 0, fire: false };
-      breakoutTouch = { active: false, x: 0 };
       clearNesDragMovement();
       if (activeNesInput) activeNesInput.releaseAll();
       document.querySelectorAll('.touch-btn.pressed').forEach(btn => btn.classList.remove('pressed'));
-    }
-
-    function setShooterTouchFromEvent(e) {
-      const t = e.changedTouches && e.changedTouches[0];
-      if (!t) return;
-      const r = canvas.getBoundingClientRect();
-      shooterTouch.active = true; shooterTouch.fire = true;
-      shooterTouch.x = (t.clientX - r.left) * (CW / r.width);
-      shooterTouch.y = (t.clientY - r.top) * (CH / r.height);
-    }
-
-    function setBreakoutTouchFromEvent(e) {
-      const t = e.changedTouches && e.changedTouches[0];
-      if (!t) return;
-      const r = canvas.getBoundingClientRect();
-      breakoutTouch.active = true;
-      breakoutTouch.x = (t.clientX - r.left) * (CW / r.width);
     }
 
     function clearTouchKeySoon(key) {
@@ -6661,18 +6388,6 @@ function resizeCanvas() {
       writeStoredFlag('chromaBatterySaver', batterySaver);
       updateSaverButton();
       syncFaceDecorativeLoops();
-    }
-
-    function updateAutoFireButton() {
-      autoFireBtn.textContent = shooterAutoFire ? 'AUTO FIRE ON' : 'AUTO FIRE OFF';
-      autoFireBtn.classList.toggle('active', shooterAutoFire);
-    }
-    function toggleShooterAutoFire() {
-      shooterAutoFire = !shooterAutoFire;
-      writeStoredFlag('chromaShooterAutoFire', shooterAutoFire);
-      updateAutoFireButton();
-      hapticEvent(hapticPatterns.power, 0);
-      sfx(shooterAutoFire ? 760 : 380, 0.05, 'sine', 0.04);
     }
 
     function updateFaceButton() {
@@ -6887,9 +6602,8 @@ function resizeCanvas() {
       let inst = isMobileControls() && mobileInst[currentGame] ? mobileInst[currentGame] : info.inst.replace(/\n/g, '<br>');
       const ssIconText = document.getElementById('ssIconText');
       const astroLogo = document.getElementById('astroLogo');
-      const modeToggle = document.getElementById('modeToggle');
       clearInputState();
-      if (currentGame === 'dino') {
+      if (currentGame === 'astro') {
         ssIconText.classList.add('hide');
         astroLogo.classList.add('show');
         drawAstroLogo(astroLogo);
@@ -6918,19 +6632,6 @@ function resizeCanvas() {
         astroLogo.classList.remove('show');
         ssIconText.textContent = info.icon;
         document.getElementById('charPicker').style.display = 'none';
-      }
-      document.getElementById('shooterOptions').style.display = currentGame === 'shooter' ? 'flex' : 'none';
-      if (currentGame === 'shooter') updateAutoFireButton();
-      if (currentGame === 'snake') {
-        modeToggle.style.display = 'flex';
-        modeToggle.querySelectorAll('.mode-btn').forEach(b => b.classList.toggle('active', (b.dataset.mode === 'classic') === snakeClassic));
-        if (snakeClassic) {
-          inst = isMobileControls()
-            ? 'Use the D-pad to move<br>Eat food to grow! Avoid walls & yourself'
-            : 'Arrow Keys / WASD to move<br>Eat food to grow! Avoid walls & yourself';
-        }
-      } else {
-        modeToggle.style.display = 'none';
       }
       ssTitle.textContent = info.name;
       ssInst.innerHTML = inst; startScreen.classList.remove('hide');
@@ -6966,7 +6667,7 @@ function resizeCanvas() {
       paused = false; gameActive = true; lastTime = 0;
       beadPlays++; document.getElementById('beadPlays').textContent = beadPlays;
       updatePauseButton();
-      const games = { snake: () => initSnake(snakeClassic), pong: initPong, shooter: initShooter, dino: initDino, breakout: initBreakout, flappy: initFlappy, aliens: initAliens };
+      const games = { astro: initAstroRunner, aliens: initAliens };
       if (games[currentGame]) cleanup = games[currentGame]();
       else if (isNesGame(currentGame)) cleanup = initNesGame(currentGame);
       scoreEl.textContent = '0'; highScoreEl.textContent = getHS(currentGame);
@@ -7037,8 +6738,8 @@ function resizeCanvas() {
       keys[e.key] = true;
       if (e.key === ' ') e.preventDefault();
       if (gameActive && ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'w', 'W', 'a', 'A', 's', 'S', 'd', 'D'].includes(e.key)) e.preventDefault();
-      if (gameActive && isNesGame(currentGame) && ['x', 'X', 'z', 'Z', 'j', 'J', 'k', 'K', 'Enter', 'Control', 'Shift', 'Backspace'].includes(e.key)) e.preventDefault();
-      const keyToGame = { '1': 'snake', '2': 'pong', '3': 'shooter', '4': 'dino', '5': 'breakout', '6': 'flappy', '7': 'aliens' };
+      if (gameActive && hasNesFeatures() && ['x', 'X', 'z', 'Z', 'j', 'J', 'k', 'K', 'Enter', 'Control', 'Shift', 'Backspace'].includes(e.key)) e.preventDefault();
+      const keyToGame = { '1': 'astro', '2': 'aliens' };
       document.querySelectorAll('.game-card[data-key]').forEach(c => { keyToGame[c.dataset.key] = c.dataset.game; });
       if (keyToGame[e.key]) {
         document.querySelectorAll('.game-card').forEach(c => {
@@ -7050,9 +6751,8 @@ function resizeCanvas() {
         else if (!startScreen.classList.contains('hide')) startGameplay();
       }
       if (e.key === 'p' || e.key === 'P') togglePause();
-      if ((e.key === 'f' || e.key === 'F') && currentGame === 'shooter') toggleShooterAutoFire();
       if (!window.matchMedia('(pointer: coarse)').matches) {
-        const keyMap = { '1': '1', '2': '2', '3': '3', '4': '4', '5': '5', '6': '6', '7': '7', 'r': 'R', 'R': 'R', 'p': 'P', 'P': 'P', 'f': 'F', 'F': 'F' };
+        const keyMap = { '1': '1', '2': '2', '3': '3', '4': '4', '5': '5', '6': '6', '7': '7', '8': '8', '9': '9', '0': '0', 'r': 'R', 'R': 'R', 'p': 'P', 'P': 'P' };
         const k = keyMap[e.key];
         if (k) {
           document.querySelectorAll('.keycap').forEach(el => {
@@ -7140,12 +6840,11 @@ function resizeCanvas() {
     touchGalaxy.addEventListener('pointerdown', e => { e.preventDefault(); e.stopPropagation(); haptic(hapticPatterns.galaxy); toggleGalaxyMode(); });
     touchSaver.addEventListener('pointerdown', e => { e.preventDefault(); e.stopPropagation(); haptic(18); toggleBatterySaver(); });
     touchAbout.addEventListener('pointerdown', e => { e.preventDefault(); e.stopPropagation(); haptic(18); showAbout(); });
-    autoFireBtn.addEventListener('click', e => { e.preventDefault(); e.stopPropagation(); toggleShooterAutoFire(); });
     aboutClose.addEventListener('pointerdown', e => { e.preventDefault(); e.stopPropagation(); hideAbout(); });
 
     nesOptimizerToggle.addEventListener('pointerdown', e => {
       e.preventDefault(); e.stopPropagation();
-      if (!isNesGame(currentGame)) return;
+      if (!hasNesFeatures()) return;
       setNesOptimizerOpen(!nesOptimizerOpen);
       haptic(18);
     });
@@ -7262,6 +6961,8 @@ function resizeCanvas() {
       if (!coarsePointer) nesGameSearch.focus();
     }
     function hideAddGame() { addGameOverlay.classList.remove('show'); addGameOverlay.setAttribute('aria-hidden', 'true'); }
+    nesGameSearch.addEventListener('focus', () => addGameOverlay.classList.add('search-active'));
+    nesGameSearch.addEventListener('blur', () => addGameOverlay.classList.remove('search-active'));
 
     function openExternalNesLink(url) {
       const win = window.open(url, '_blank', 'noopener,noreferrer');
@@ -7677,12 +7378,13 @@ function resizeCanvas() {
     }
 
     function updateGameCount() {
-      const totalGames = document.querySelectorAll('.game-card:not(.game-card-add)').length;
-      document.getElementById('gcCount').textContent = totalGames + ' GAMES ›';
+      const builtIns = document.querySelectorAll('.game-card:not(.game-card-add):not([data-game^="nes_"])').length;
+      const nesGames = document.querySelectorAll('.game-card[data-game^="nes_"]').length;
+      document.getElementById('gcCount').textContent = builtIns + ' BUILT-INS' + (nesGames ? ' + ' + nesGames + ' NES' : ' + NES') + ' ›';
     }
 
     function sessionRomShortcut(index) {
-      return ['8', '9', '0'][index - 1] || '';
+      return ['3', '4', '5', '6', '7', '8', '9', '0'][index - 1] || '';
     }
 
     function addSessionNesCard(id, name, key) {
@@ -7698,7 +7400,7 @@ function resizeCanvas() {
       nameEl.textContent = name;
       card.append(iconEl, nameEl);
       card.addEventListener('click', () => selectGameCard(card));
-      addGameCard.parentNode.insertBefore(card, addGameCard);
+      document.getElementById('gcCount').parentNode.insertBefore(card, document.getElementById('gcCount'));
       updateGameCount();
       return card;
     }
@@ -7727,7 +7429,6 @@ function resizeCanvas() {
           icon: '📼',
           inst: 'Arrows / WASD = D-pad\nX / K / Space = A   Z / J = B\nEnter = Start   Ctrl / Backspace = Select\nR restarts the ROM'
         };
-        mobileLayouts[id] = 'nes';
         mobileActionText[id] = 'A';
         mobileInst[id] = 'Use DPAD or DRAG (8-way) from OPTIMIZER<br>A / B are NES action buttons<br>START begins most games • SELECT opens game menus';
         const card = addSessionNesCard(id, name, key);
@@ -7761,14 +7462,6 @@ function resizeCanvas() {
         cards.forEach((c, i) => { c.offsetHeight; c.style.animation = ''; c.style.animationDelay = (i * 60) + 'ms'; c.classList.add('pop-in'); });
       }
     });
-    document.getElementById('modeToggle').addEventListener('click', e => {
-      const btn = e.target.closest('.mode-btn');
-      if (!btn) return;
-      snakeClassic = btn.dataset.mode === 'classic';
-      writeStoredFlag('chromaSnakeClassic', snakeClassic);
-      document.getElementById('modeToggle').querySelectorAll('.mode-btn').forEach(b => b.classList.toggle('active', b === btn));
-      showStart();
-    });
     instHelpClose.addEventListener('click', hideInstructionHelp);
     instHelpOverlay.addEventListener('click', e => { if (e.target === instHelpOverlay) hideInstructionHelp(); });
     document.addEventListener('fullscreenchange', () => { updateFullscreenButton(); setTimeout(handleViewportChange, 120); });
@@ -7781,7 +7474,6 @@ function resizeCanvas() {
     updateSaverButton();
     updateFaceButton();
     updateLightButton();
-    updateAutoFireButton();
 
     function startSiteAudioOnce() { siteAudioUnlocked = true; }
     document.addEventListener('pointerdown', startSiteAudioOnce, { once: true });
@@ -7789,24 +7481,16 @@ function resizeCanvas() {
 
     canvas.addEventListener('touchstart', e => {
       e.preventDefault();
-      if (currentGame === 'shooter') setShooterTouchFromEvent(e);
-      if (currentGame === 'breakout') setBreakoutTouchFromEvent(e);
-      if (currentGame === 'dino' || currentGame === 'flappy' || currentGame === 'shooter') {
+      if (currentGame === 'astro') {
         hapticForTouchKey(' ');
         setTouchKey(' ', true);
       }
     }, { passive: false });
     canvas.addEventListener('touchend', e => {
       e.preventDefault();
-      if (currentGame === 'shooter') { shooterTouch.active = false; shooterTouch.fire = false; }
-      if (currentGame === 'breakout') breakoutTouch.active = false;
       clearTouchKeySoon(' ');
     }, { passive: false });
-    canvas.addEventListener('touchmove', e => {
-      e.preventDefault();
-      if (currentGame === 'shooter') setShooterTouchFromEvent(e);
-      if (currentGame === 'breakout') setBreakoutTouchFromEvent(e);
-    }, { passive: false });
+    canvas.addEventListener('touchmove', e => { e.preventDefault(); }, { passive: false });
 
     // ==================== DECOR ====================
     function spawnDomParticles(x, y, colors, count) {
@@ -7942,661 +7626,8 @@ function resizeCanvas() {
       });
     })();
 
-    // ==================== SNAKE (dt) ====================
-    function initSnake(classic) {
-      const g = Math.floor(Math.min(CW, CH) / 22); const cols = Math.floor(CW / g); const rows = Math.floor(CH / g);
-      let snake = [{ x: Math.floor(cols / 2), y: Math.floor(rows / 2) }, { x: Math.floor(cols / 2) - 1, y: Math.floor(rows / 2) }];
-      let dir = { x: 1, y: 0 }, nextDir = { x: 1, y: 0 };
-      let food = { x: Math.floor(Math.random() * cols), y: Math.floor(Math.random() * rows) };
-      let pFood = null; let sFood = null; let gFood = null; let bFood = null; let ghostMoves = 0;
-      let alive = true, sc = 0, scored = false;
-      let moveTimer = 0, moveInterval = 0.15, popups = [], particles = [];
-      let combo = 0, dying = false, deathTimer = 0, lastMilestone = 0;
-      const colors = ['#ff6b9d', '#c44dff', '#4dc9f6', '#ffdd4a', '#2ecc71'];
-
-      function spawnParticles(x, y, count, hueBase, spread, grav, sizeMul) {
-        for (let i = 0; i < count; i++) {
-          const a = Math.random() * Math.PI * 2;
-          const sp = (20 + Math.random() * spread) * (1 + combo * 0.04);
-          particles.push({
-            x, y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp - 30, life: 1,
-            decay: 0.3 + Math.random() * 0.5, size: 1.5 + Math.random() * 3 * (sizeMul || 1),
-            hue: hueBase + (Math.random() - 0.5) * 40, grav: grav || 100
-          });
-        }
-      }
-
-      function spawnFirework(cx, cy) {
-        const count = 18 + Math.floor(Math.random() * 12);
-        for (let i = 0; i < count; i++) {
-          const a = Math.random() * Math.PI * 2;
-          const sp = 50 + Math.random() * 130;
-          particles.push({
-            x: cx || (30 + Math.random() * (CW - 60)), y: cy || (30 + Math.random() * (CH * 0.4)),
-            vx: Math.cos(a) * sp, vy: Math.sin(a) * sp - 50, life: 1,
-            decay: 0.25 + Math.random() * 0.25, size: 2 + Math.random() * 3,
-            hue: Math.random() * 360, grav: 70
-          });
-        }
-      }
-
-      function updateParticles(dt) {
-        particles.forEach(p => {
-          p.x += p.vx * dt; p.y += p.vy * dt; p.vy += (p.grav || 100) * dt;
-          p.life -= p.decay * dt;
-          const a = Math.max(0, p.life);
-          ctx.globalAlpha = a * 0.8;
-          ctx.fillStyle = `hsl(${p.hue},90%,60%)`;
-          ctx.shadowColor = `hsla(${p.hue},90%,60%,${a * 0.4})`;
-          ctx.shadowBlur = 3;
-          ctx.beginPath(); ctx.arc(p.x, p.y, p.size * Math.max(0.2, a), 0, Math.PI * 2); ctx.fill();
-        });
-        ctx.globalAlpha = 1; ctx.shadowBlur = 0;
-        particles = particles.filter(p => p.life > 0);
-      }
-
-      function update(timestamp) {
-        if (!gameActive) return;
-        if (!lastTime) lastTime = timestamp;
-        const dt = Math.min((timestamp - lastTime) / 1000, 0.05); lastTime = timestamp;
-
-        // Death animation phase (plays even when paused)
-        if (dying) {
-          deathTimer -= dt;
-          const bgGrad = ctx.createRadialGradient(CW / 2, CH / 2, 0, CW / 2, CH / 2, Math.max(CW, CH) * 0.7);
-          bgGrad.addColorStop(0, '#0f0525'); bgGrad.addColorStop(1, '#04010a');
-          ctx.fillStyle = bgGrad; ctx.fillRect(0, 0, CW, CH);
-          updateParticles(dt);
-          if (deathTimer <= 0) { dying = false; const nw = updateHS('snake'); showGameOver(sc, nw); return; }
-          gameLoop = requestAnimationFrame(update);
-          return;
-        }
-
-        if (!alive || paused) { gameLoop = requestAnimationFrame(update); return; }
-
-        moveTimer += dt;
-        if ((keys['ArrowUp'] || keys['w'] || keys.up) && dir.y === 0) nextDir = { x: 0, y: -1 };
-        if ((keys['ArrowDown'] || keys['s'] || keys.down) && dir.y === 0) nextDir = { x: 0, y: 1 };
-        if ((keys['ArrowLeft'] || keys['a'] || keys.left) && dir.x === 0) nextDir = { x: -1, y: 0 };
-        if ((keys['ArrowRight'] || keys['d'] || keys.right) && dir.x === 0) nextDir = { x: 1, y: 0 };
-
-        if (moveTimer >= moveInterval) {
-          moveTimer -= moveInterval;
-          dir = { ...nextDir };
-          const h = { x: snake[0].x + dir.x, y: snake[0].y + dir.y };
-          let hitWall = h.x < 0 || h.x >= cols || h.y < 0 || h.y >= rows;
-          let hitSelf = snake.some(s => s.x === h.x && s.y === h.y);
-          if (hitWall || hitSelf) {
-            if (ghostMoves > 0 && (hitWall || hitSelf)) {
-              if (hitWall) {
-                if (h.x < 0) h.x = cols - 1; else if (h.x >= cols) h.x = 0;
-                if (h.y < 0) h.y = rows - 1; else if (h.y >= rows) h.y = 0;
-              }
-            } else {
-              alive = false; dying = true; deathTimer = 1.2; sfx(60, 0.4, 'sawtooth', 0.06);
-              snake.forEach(s => spawnParticles(s.x * g + g / 2, s.y * g + g / 2, 2, Math.random() * 360, 180, 120, 1.5));
-              spawnParticles(snake[0].x * g + g / 2, snake[0].y * g + g / 2, 12, 0, 250, 100, 2);
-              combo = 0; ghostMoves = 0;
-              hapticEvent(hapticPatterns.gameOver, 0);
-              gameLoop = requestAnimationFrame(update);
-              return;
-            }
-          }
-          snake.unshift(h);
-          if (h.x === food.x && h.y === food.y) {
-            if (!classic) combo++;
-            sc++; score = sc; scoreEl.textContent = sc;
-            hapticEvent(hapticPatterns.score);
-            moveInterval = Math.max(0.06, moveInterval - 0.004); sfx(660, 0.04, 'sine', 0.05);
-            if (!classic) {
-              popups.push({ x: h.x * g + g / 2, y: h.y * g + g / 2, t: combo > 1 ? '+1 x' + combo : '+1', life: 1, c: '255,107,157' });
-              spawnParticles(food.x * g + g / 2, food.y * g + g / 2, 8, 340, 80, 60);
-            }
-            if (!classic && sc > 0 && sc % 5 === 0 && sc !== lastMilestone) { lastMilestone = sc; spawnFirework(); spawnFirework(); sfx(880, 0.08, 'sine', 0.06); }
-            food = { x: Math.floor(Math.random() * cols), y: Math.floor(Math.random() * rows) };
-            if (!classic) {
-              let spawnRoll = true;
-              if (spawnRoll && Math.random() > 0.92) { gFood = { x: Math.floor(Math.random() * cols), y: Math.floor(Math.random() * rows), life: 20 }; spawnRoll = false; }
-              if (spawnRoll && Math.random() > 0.90) { bFood = { x: Math.floor(Math.random() * cols), y: Math.floor(Math.random() * rows), life: 30 }; spawnRoll = false; }
-              if (spawnRoll && Math.random() > 0.88) { sFood = { x: Math.floor(Math.random() * cols), y: Math.floor(Math.random() * rows), life: 25 }; spawnRoll = false; }
-              if (spawnRoll && Math.random() > 0.88) { pFood = { x: Math.floor(Math.random() * cols), y: Math.floor(Math.random() * rows), life: 35 }; }
-            }
-          } else { snake.pop(); }
-          if (pFood) {
-            pFood.life--;
-            if (snake[0].x === pFood.x && snake[0].y === pFood.y) {
-              combo++; sc += 3; score = sc; scoreEl.textContent = sc; moveInterval = Math.max(0.04, moveInterval - 0.012);
-              hapticEvent(hapticPatterns.power, 0);
-              sfx(880, 0.06, 'sine', 0.06);
-              popups.push({ x: pFood.x * g + g / 2, y: pFood.y * g + g / 2, t: combo > 1 ? '+3 x' + combo : '+3', life: 1, c: '255,221,74' });
-              spawnParticles(pFood.x * g + g / 2, pFood.y * g + g / 2, 12, 45, 100, 50, 1.5);
-              if (sc > 0 && sc % 5 === 0 && sc !== lastMilestone) { lastMilestone = sc; spawnFirework(); spawnFirework(); sfx(880, 0.08, 'sine', 0.06); }
-              pFood = null;
-            } else if (pFood.life <= 0) pFood = null;
-          }
-          if (sFood) {
-            sFood.life--;
-            if (snake[0].x === sFood.x && snake[0].y === sFood.y) {
-              combo++; sc += 2; score = sc; scoreEl.textContent = sc;
-              hapticEvent(hapticPatterns.score);
-              sfx(440, 0.06, 'triangle', 0.06);
-              popups.push({ x: sFood.x * g + g / 2, y: sFood.y * g + g / 2, t: combo > 1 ? '+2 x' + combo : '+2', life: 1, c: '46,204,113' });
-              spawnParticles(sFood.x * g + g / 2, sFood.y * g + g / 2, 10, 120, 80, 60);
-              if (snake.length > 4) snake.splice(snake.length - 3, 3);
-              else if (snake.length > 2) snake.splice(snake.length - 1, 1);
-              if (sc > 0 && sc % 5 === 0 && sc !== lastMilestone) { lastMilestone = sc; spawnFirework(); spawnFirework(); sfx(880, 0.08, 'sine', 0.06); }
-              sFood = null;
-            } else if (sFood.life <= 0) sFood = null;
-          }
-          if (gFood) {
-            gFood.life--;
-            if (snake[0].x === gFood.x && snake[0].y === gFood.y) {
-              combo++; sc += 1; score = sc; scoreEl.textContent = sc; moveInterval = Math.max(0.06, moveInterval - 0.004);
-              hapticEvent(hapticPatterns.power);
-              sfx(660, 0.06, 'sine', 0.06);
-              popups.push({ x: gFood.x * g + g / 2, y: gFood.y * g + g / 2, t: combo > 1 ? '+1 x' + combo : '+1', life: 1, c: '196,78,255' });
-              spawnParticles(gFood.x * g + g / 2, gFood.y * g + g / 2, 8, 290, 80, 60);
-              ghostMoves = 8;
-              if (sc > 0 && sc % 5 === 0 && sc !== lastMilestone) { lastMilestone = sc; spawnFirework(); spawnFirework(); sfx(880, 0.08, 'sine', 0.06); }
-              gFood = null;
-            } else if (gFood.life <= 0) gFood = null;
-          }
-          if (bFood) {
-            bFood.life--;
-            if (snake[0].x === bFood.x && snake[0].y === bFood.y) {
-              combo++; sc += 5; score = sc; scoreEl.textContent = sc;
-              hapticEvent(hapticPatterns.power); hapticEvent(hapticPatterns.power);
-              sfx(220, 0.08, 'sawtooth', 0.05);
-              popups.push({ x: bFood.x * g + g / 2, y: bFood.y * g + g / 2, t: combo > 1 ? '+5 x' + combo : '+5', life: 1, c: '156,39,176' });
-              spawnParticles(bFood.x * g + g / 2, bFood.y * g + g / 2, 15, 270, 120, 60, 1.2);
-              if (sc > 0 && sc % 5 === 0 && sc !== lastMilestone) { lastMilestone = sc; spawnFirework(); spawnFirework(); sfx(880, 0.08, 'sine', 0.06); }
-              bFood = null;
-            } else if (bFood.life <= 0) bFood = null;
-          }
-          if (ghostMoves > 0) ghostMoves--;
-        }
-
-        // Background
-        const bgGrad = ctx.createRadialGradient(CW / 2, CH / 2, 0, CW / 2, CH / 2, Math.max(CW, CH) * 0.7);
-        bgGrad.addColorStop(0, '#0f0525'); bgGrad.addColorStop(1, '#04010a');
-        ctx.fillStyle = bgGrad; ctx.fillRect(0, 0, CW, CH);
-        // Neon grid
-        const hueOff = Date.now() * 0.02;
-        ctx.strokeStyle = `hsla(${hueOff},80%,55%,0.04)`; ctx.lineWidth = 0.5;
-        for (let i = 0; i <= cols; i++) { ctx.beginPath(); ctx.moveTo(i * g, 0); ctx.lineTo(i * g, CH); ctx.stroke(); }
-        for (let i = 0; i <= rows; i++) { ctx.beginPath(); ctx.moveTo(0, i * g); ctx.lineTo(CW, i * g); ctx.stroke(); }
-        // Particles (food bursts, fireworks)
-        updateParticles(dt);
-        // Snake body
-        snake.forEach((s, i) => {
-          const hue = (hueOff + i * 12) % 360;
-          const a = (1 - i / snake.length * 0.5) * (ghostMoves > 0 ? 0.55 : 1);
-          const rad = g * 0.45;
-          ctx.shadowColor = `hsla(${hue},100%,60%,${a * 0.4})`; ctx.shadowBlur = ghostMoves > 0 ? 12 : 6;
-          ctx.fillStyle = `hsla(${hue},90%,55%,${a})`;
-          ctx.beginPath(); ctx.arc(s.x * g + g / 2, s.y * g + g / 2, rad, 0, Math.PI * 2); ctx.fill();
-          ctx.shadowBlur = 0;
-          ctx.fillStyle = `hsla(${hue},80%,70%,${a * 0.15})`;
-          ctx.beginPath(); ctx.arc(s.x * g + g / 2 - 1, s.y * g + g / 2 - 1, rad * 0.55, 0, Math.PI * 2); ctx.fill();
-        });
-        // Head eyes
-        ctx.fillStyle = '#fff';
-        ctx.beginPath(); ctx.arc(snake[0].x * g + g / 2 - 4, snake[0].y * g + g / 2 - 4, 3, 0, Math.PI * 2); ctx.fill();
-        ctx.beginPath(); ctx.arc(snake[0].x * g + g / 2 + 4, snake[0].y * g + g / 2 - 4, 3, 0, Math.PI * 2); ctx.fill();
-        ctx.fillStyle = '#1a0a2e';
-        ctx.beginPath(); ctx.arc(snake[0].x * g + g / 2 - 4, snake[0].y * g + g / 2 - 4, 1.5, 0, Math.PI * 2); ctx.fill();
-        ctx.beginPath(); ctx.arc(snake[0].x * g + g / 2 + 4, snake[0].y * g + g / 2 - 4, 1.5, 0, Math.PI * 2); ctx.fill();
-        // Tongue
-        const tExt = Math.sin(Date.now() * 0.008) * 2 + 3;
-        ctx.shadowColor = '#ff3b5c'; ctx.shadowBlur = 3; ctx.strokeStyle = '#ff3b5c'; ctx.lineWidth = 1.5;
-        ctx.beginPath();
-        if (dir.x === 1) { ctx.moveTo(snake[0].x * g + g, snake[0].y * g + g / 2); ctx.lineTo(snake[0].x * g + g + tExt, snake[0].y * g + g / 2 - 3); ctx.moveTo(snake[0].x * g + g, snake[0].y * g + g / 2); ctx.lineTo(snake[0].x * g + g + tExt, snake[0].y * g + g / 2 + 3); }
-        else if (dir.x === -1) { ctx.moveTo(snake[0].x * g, snake[0].y * g + g / 2); ctx.lineTo(snake[0].x * g - tExt, snake[0].y * g + g / 2 - 3); ctx.moveTo(snake[0].x * g, snake[0].y * g + g / 2); ctx.lineTo(snake[0].x * g - tExt, snake[0].y * g + g / 2 + 3); }
-        else if (dir.y === 1) { ctx.moveTo(snake[0].x * g + g / 2, snake[0].y * g + g); ctx.lineTo(snake[0].x * g + g / 2 - 3, snake[0].y * g + g + tExt); ctx.moveTo(snake[0].x * g + g / 2, snake[0].y * g + g); ctx.lineTo(snake[0].x * g + g / 2 + 3, snake[0].y * g + g + tExt); }
-        else if (dir.y === -1) { ctx.moveTo(snake[0].x * g + g / 2, snake[0].y * g); ctx.lineTo(snake[0].x * g + g / 2 - 3, snake[0].y * g - tExt); ctx.moveTo(snake[0].x * g + g / 2, snake[0].y * g); ctx.lineTo(snake[0].x * g + g / 2 + 3, snake[0].y * g - tExt); }
-        ctx.stroke(); ctx.shadowBlur = 0;
-        // Food
-        const pulse = Math.sin(Date.now() * 0.005) * 0.15 + 0.85;
-        ctx.shadowColor = '#ff6b9d'; ctx.shadowBlur = 10 * pulse;
-        ctx.fillStyle = '#ff6b9d';
-        ctx.beginPath(); ctx.arc(food.x * g + g / 2, food.y * g + g / 2, g / 2 - 1, 0, Math.PI * 2); ctx.fill();
-        ctx.shadowBlur = 0;
-        ctx.strokeStyle = 'rgba(255,107,157,0.3)'; ctx.lineWidth = 1.5;
-        ctx.beginPath(); ctx.arc(food.x * g + g / 2, food.y * g + g / 2, g / 2 + 3 * pulse, 0, Math.PI * 2); ctx.stroke();
-        ctx.fillStyle = 'rgba(255,255,255,0.3)';
-        ctx.beginPath(); ctx.arc(food.x * g + g / 2 - 2, food.y * g + g / 2 - 2, 2, 0, Math.PI * 2); ctx.fill();
-        if (pFood) {
-          const pp = Math.sin(Date.now() * 0.006) * 0.2 + 0.8;
-          ctx.shadowColor = '#ffdd4a'; ctx.shadowBlur = 14 * pp;
-          ctx.fillStyle = '#ffdd4a';
-          ctx.beginPath(); ctx.arc(pFood.x * g + g / 2, pFood.y * g + g / 2, g / 2 - 1, 0, Math.PI * 2); ctx.fill();
-          ctx.shadowBlur = 0;
-          ctx.fillStyle = 'rgba(255,255,255,0.7)'; ctx.font = '8px "Nunito"'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-          ctx.fillText('\u2605', pFood.x * g + g / 2, pFood.y * g + g / 2 + 0.5);
-        }
-        if (sFood) {
-          const sp = Math.sin(Date.now() * 0.006) * 0.2 + 0.8;
-          ctx.shadowColor = '#2ecc71'; ctx.shadowBlur = 12 * sp;
-          ctx.fillStyle = '#2ecc71';
-          ctx.beginPath(); ctx.arc(sFood.x * g + g / 2, sFood.y * g + g / 2, g / 2 - 1, 0, Math.PI * 2); ctx.fill();
-          ctx.shadowBlur = 0;
-          ctx.fillStyle = 'rgba(255,255,255,0.7)'; ctx.font = '8px "Nunito"'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-          ctx.fillText('\u2193', sFood.x * g + g / 2, sFood.y * g + g / 2 + 0.5);
-        }
-        if (gFood) {
-          const gp = Math.sin(Date.now() * 0.007) * 0.2 + 0.8;
-          ctx.shadowColor = '#c44dff'; ctx.shadowBlur = 14 * gp;
-          ctx.fillStyle = '#c44dff';
-          ctx.beginPath(); ctx.arc(gFood.x * g + g / 2, gFood.y * g + g / 2, g / 2 - 1, 0, Math.PI * 2); ctx.fill();
-          ctx.shadowBlur = 0;
-          ctx.fillStyle = 'rgba(255,255,255,0.7)'; ctx.font = '8px "Nunito"'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-          ctx.fillText('\u2606', gFood.x * g + g / 2, gFood.y * g + g / 2 + 0.5);
-        }
-        if (bFood) {
-          const bp = Math.sin(Date.now() * 0.0055) * 0.2 + 0.8;
-          ctx.shadowColor = '#9c27b0'; ctx.shadowBlur = 16 * bp;
-          ctx.fillStyle = '#9c27b0';
-          ctx.beginPath(); ctx.arc(bFood.x * g + g / 2, bFood.y * g + g / 2, g / 2 - 1, 0, Math.PI * 2); ctx.fill();
-          ctx.shadowBlur = 0;
-          ctx.fillStyle = 'rgba(255,255,255,0.7)'; ctx.font = '8px "Nunito"'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-          ctx.fillText('+', bFood.x * g + g / 2, bFood.y * g + g / 2 + 0.5);
-        }
-        // Score popups
-        popups.forEach(p => {
-          p.y -= p.life * 30 * dt; p.life -= dt * 0.7;
-          const fs = p.t.includes('x') ? 14 : 12;
-          ctx.font = '700 ' + fs + 'px "Nunito"'; ctx.textAlign = 'center';
-          ctx.fillStyle = `rgba(${p.c},${Math.max(0, p.life * 0.9)})`;
-          ctx.fillText(p.t, p.x, p.y);
-        });
-        popups = popups.filter(p => p.life > 0);
-        if (!classic) {
-          // Speedometer bar
-          const speedLvl = Math.floor((0.15 - moveInterval) / 0.01) + 1;
-          const barW = 60, barH = 4, barX = CW - barW - 8, barY = 8;
-          ctx.fillStyle = 'rgba(255,255,255,0.08)';
-          ctx.fillRect(barX, barY, barW, barH);
-          const fillW = Math.min(1, speedLvl / 10) * barW;
-          ctx.fillStyle = `hsla(${Math.min(160, speedLvl * 16)},90%,60%,0.6)`;
-          ctx.fillRect(barX, barY, fillW, barH);
-          ctx.font = '7px "Nunito"'; ctx.textAlign = 'left';
-          ctx.fillStyle = 'rgba(255,255,255,0.25)';
-          ctx.fillText('SPD ' + speedLvl, barX, barY - 2);
-        }
-        // Game name + combo overlay
-        ctx.font = '700 11px "Nunito"'; ctx.textAlign = 'center';
-        ctx.fillStyle = 'rgba(255,255,255,0.15)';
-        ctx.fillText('SNAKE', CW / 2, 16);
-        if (!classic && combo > 1) {
-          ctx.font = '700 14px "Nunito"';
-          ctx.fillStyle = `rgba(255,221,74,${0.3 + Math.sin(Date.now() * 0.005) * 0.15})`;
-          ctx.shadowColor = 'rgba(255,221,74,0.3)'; ctx.shadowBlur = 8;
-          ctx.fillText(combo + 'x COMBO', CW / 2, 44);
-          ctx.shadowBlur = 0;
-        }
-        gameLoop = requestAnimationFrame(update);
-      }
-      gameLoop = requestAnimationFrame(update);
-      return () => { alive = false; dying = false; cancelAnimationFrame(gameLoop); };
-    }
-
-    // ==================== PONG (dt) ====================
-    function initPong() {
-      const winScore = 10;
-      const pw = 8, ph = 76; let py = CH / 2 - ph / 2, ay = CH / 2 - ph / 2;
-      let bx = CW / 2, by = CH / 2, bvx = 280, bvy = 180;
-      let ps = 0, as = 0, alive = true; const trail = [];
-
-      let rallyTime = 0;
-      function pongDifficulty() { return Math.min(1.85, 1 + ps * 0.16); }
-      function clampBallSpeed() {
-        const maxX = 580 + ps * 50;
-        const maxY = 420 + ps * 32;
-        if (Math.abs(bvx) > maxX) bvx = (bvx > 0 ? maxX : -maxX);
-        if (Math.abs(bvy) > maxY) bvy = (bvy > 0 ? maxY : -maxY);
-      }
-
-      function update(timestamp) {
-        if (!alive || !gameActive) return;
-        if (paused) { gameLoop = requestAnimationFrame(update); return; }
-        if (!lastTime) lastTime = timestamp;
-        const dt = Math.min((timestamp - lastTime) / 1000, 0.05); lastTime = timestamp;
-        if (!gameActive) return;
-
-        if (keys['ArrowUp'] || keys['w']) py = Math.max(0, py - 400 * dt);
-        if (keys['ArrowDown'] || keys['s']) py = Math.min(CH - ph, py + 400 * dt);
-        const asp = 200 + as * 30;
-        if (by < ay + ph / 2 - 4) ay = Math.max(0, ay - asp * dt);
-        if (by > ay + ph / 2 + 4) ay = Math.min(CH - ph, ay + asp * dt);
-        bx += bvx * dt; by += bvy * dt;
-        if (by <= 2 || by >= CH - 2) bvy *= -1;
-        rallyTime += dt;
-        if (rallyTime > 8) {
-          rallyTime = 0;
-          bvx *= 1.04; bvy *= 1.04;
-          clampBallSpeed();
-        }
-        if (bx <= 14 && by >= py && by <= py + ph) {
-          bvx = Math.abs(bvx) * (1.08 + ps * 0.015); bvy += (by - (py + ph / 2)) * (12 + ps * 1.4);
-          clampBallSpeed();
-          sfx(440, 0.04, 'sine', 0.05);
-        }
-        if (bx >= CW - 14 && by >= ay && by <= ay + ph) {
-          bvx = -Math.abs(bvx) * (1.08 + ps * 0.015); bvy += (by - (ay + ph / 2)) * (12 + ps * 1.4);
-          clampBallSpeed();
-          sfx(550, 0.04, 'sine', 0.05);
-        }
-        if (bx < -10) { as++; score = ps; scoreEl.textContent = ps; resetBall(); }
-        if (bx > CW + 10) { ps++; score = ps; scoreEl.textContent = ps; resetBall(); }
-        if (ps >= winScore || as >= winScore) {
-          alive = false;
-          score = ps;
-          const nw = updateHS('pong');
-          if (ps >= winScore) showGameWin(ps, nw, 'PLAYER WINS');
-          else showGameOver(ps, nw, 'CPU WINS');
-          return;
-        }
-
-        trail.push({ x: bx, y: by, life: 0.4 });
-        trail.forEach(t => t.life -= dt);
-        while (trail.length > 20) trail.shift();
-
-        ctx.fillStyle = '#0d0221'; ctx.fillRect(0, 0, CW, CH);
-        ctx.setLineDash([6, 8]); ctx.strokeStyle = 'rgba(255,255,255,0.03)'; ctx.lineWidth = 1;
-        ctx.beginPath(); ctx.moveTo(CW / 2, 0); ctx.lineTo(CW / 2, CH); ctx.stroke(); ctx.setLineDash([]);
-        trail.forEach(t => {
-          if (t.life > 0) {
-            ctx.fillStyle = `rgba(255,221,74,${t.life * 0.3})`;
-            ctx.beginPath(); ctx.arc(t.x, t.y, 2.5, 0, Math.PI * 2); ctx.fill();
-          }
-        });
-        ctx.fillStyle = '#4dc9f6'; ctx.shadowColor = '#4dc9f6'; ctx.shadowBlur = 8; ctx.fillRect(4, py, pw, ph); ctx.shadowBlur = 0;
-        ctx.fillStyle = 'rgba(255,107,157,0.4)'; ctx.fillRect(CW - 4 - pw, ay, pw, ph);
-        ctx.fillStyle = '#ffdd4a'; ctx.shadowColor = '#ffdd4a'; ctx.shadowBlur = 15;
-        ctx.beginPath(); ctx.arc(bx, by, 5, 0, Math.PI * 2); ctx.fill(); ctx.shadowBlur = 0;
-        ctx.font = '14px "Fredoka One"'; ctx.textAlign = 'center';
-        ctx.shadowColor = 'rgba(77,201,246,0.4)'; ctx.shadowBlur = 6;
-        ctx.fillStyle = 'rgba(77,201,246,0.85)'; ctx.fillText('YOU ' + ps, CW / 2 - 50, 48);
-        ctx.shadowColor = 'rgba(255,107,157,0.4)'; ctx.shadowBlur = 6;
-        ctx.fillStyle = 'rgba(255,107,157,0.85)'; ctx.fillText(as + ' CPU', CW / 2 + 50, 48);
-        ctx.shadowBlur = 0;
-        ctx.font = '7px "Nunito"'; ctx.fillStyle = 'rgba(255,221,74,0.12)';
-        ctx.fillText('SPEED x' + pongDifficulty().toFixed(2), CW / 2, 66);
-        gameLoop = requestAnimationFrame(update);
-      }
-      function resetBall() {
-        bx = CW / 2; by = CH / 2;
-        bvx = (Math.random() > 0.5 ? 280 : -280) * (1 + ps * 0.1);
-        bvy = (Math.random() - 0.5) * 150 * (1 + ps * 0.1);
-        clampBallSpeed();
-      }
-      gameLoop = requestAnimationFrame(update);
-      return () => { alive = false; cancelAnimationFrame(gameLoop); };
-    }
-
-    // ==================== SHOOTER (dt) ====================
-    function initShooter() {
-      let px = CW / 2, py = CH - 40, lives = 3, sc = 0, alive = true, enemies = [], bullets = [], powers = [];
-      let rapid = false, spread = false, shield = false;
-      let rapidT = 0, spreadT = 0, shieldT = 0;
-      let shotTimer = 0, powerTimer = 0, spawnTimer = 0, stage = 1;
-      let particles = [], popups = [], combo = 0, comboTimer = 0;
-      let trail = [], shakeX = 0, shakeY = 0, shakeDur = 0;
-      const powerTypes = ['rapid', 'spread', 'shield', 'bomb', 'life'];
-      for (let i = 0; i < 6; i++) { enemies.push({ x: 30 + Math.random() * (CW - 60), y: 20 + Math.random() * 80, w: 26, h: 22, hp: 1, spd: 1, zig: Math.random() * Math.PI * 2 }); }
-
-      function spawnEnemy() {
-        const hp = 1 + Math.floor((stage - 1) / 2);
-        const spd = 1 + stage * 0.35;
-        const w = 22 + Math.random() * 12;
-        const laneCount = Math.max(4, Math.min(8, stage + 3));
-        const lane = Math.floor(Math.random() * laneCount);
-        const laneW = CW / laneCount;
-        const x = Math.max(8, Math.min(CW - w - 8, lane * laneW + laneW * 0.5 - w / 2 + (Math.random() - 0.5) * laneW * 0.45));
-        enemies.push({ x, y: -30, w, h: 20 + Math.random() * 8, hp, spd, zig: Math.random() * Math.PI * 2 });
-      }
-
-      function spawnParticles(x, y, count, hue, spread, grav) {
-        for (let i = 0; i < count; i++) {
-          const a = Math.random() * Math.PI * 2;
-          const sp = 15 + Math.random() * spread;
-          particles.push({
-            x, y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp - 20, life: 1,
-            decay: 0.3 + Math.random() * 0.4, size: 1.5 + Math.random() * 3,
-            hue: hue + (Math.random() - 0.5) * 30, grav: grav || 80
-          });
-        }
-      }
-
-      function triggerShake(dur) {
-        shakeDur = dur;
-        shakeX = (Math.random() - 0.5) * dur * 12;
-        shakeY = (Math.random() - 0.5) * dur * 12;
-      }
-
-      function update(timestamp) {
-        if (!alive || !gameActive) return;
-        if (paused) { gameLoop = requestAnimationFrame(update); return; }
-        if (!lastTime) lastTime = timestamp;
-        const dt = Math.min((timestamp - lastTime) / 1000, 0.05); lastTime = timestamp;
-        if (!gameActive) return;
-
-        if (keys['ArrowLeft'] || keys['a']) px = Math.max(0, px - 400 * dt);
-        if (keys['ArrowRight'] || keys['d']) px = Math.min(CW - 32, px + 400 * dt);
-        if (keys['ArrowUp'] || keys['w']) py = Math.max(0, py - 400 * dt);
-        if (keys['ArrowDown'] || keys['s']) py = Math.min(CH - 24, py + 400 * dt);
-        if (shooterTouch.active) {
-          const tx = Math.max(0, Math.min(CW - 32, shooterTouch.x - 16));
-          const ty = Math.max(0, Math.min(CH - 24, shooterTouch.y - 12));
-          const follow = Math.min(1, dt * 14);
-          px += (tx - px) * follow; py += (ty - py) * follow;
-        }
-
-        // Player trail
-        trail.unshift({ x: px + 16, y: py + 12 });
-        if (trail.length > 8) trail.pop();
-
-        // Power-up timers
-        if (rapidT > 0) { rapidT -= dt; if (rapidT <= 0) { rapidT = 0; rapid = false; } }
-        if (spreadT > 0) { spreadT -= dt; if (spreadT <= 0) { spreadT = 0; spread = false; } }
-        if (shieldT > 0) { shieldT -= dt; if (shieldT <= 0) { shieldT = 0; shield = false; } }
-
-        // Combo timer
-        if (comboTimer > 0) comboTimer -= dt;
-        else combo = 0;
-
-        shotTimer += dt;
-        const cd = rapid ? 0.1 : 0.25;
-        if ((keys[' '] || shooterTouch.fire || shooterAutoFire) && shotTimer >= cd) {
-          shotTimer = 0;
-          if (spread) {
-            bullets.push({ x: px + 10, y: py - 8, w: 4, h: 8, vx: -80, vy: -600 });
-            bullets.push({ x: px + 14, y: py - 8, w: 4, h: 8, vx: 0, vy: -600 });
-            bullets.push({ x: px + 18, y: py - 8, w: 4, h: 8, vx: 80, vy: -600 });
-          } else { bullets.push({ x: px + 13, y: py - 8, w: 4, h: 8, vx: 0, vy: -600 }); }
-          sfx(880, 0.03, 'sine', 0.04);
-        }
-
-        const nextStage = 1 + Math.floor(sc / 120);
-        if (nextStage !== stage) { stage = nextStage; triggerShake(0.25); sfx(520 + stage * 35, 0.08, 'square', 0.05); }
-
-        const spawnIvl = Math.max(0.45, 1.7 - stage * 0.12);
-        spawnTimer += dt;
-        if (spawnTimer >= spawnIvl) {
-          spawnTimer = 0;
-          const count = 1 + Math.floor((stage - 1) / 3);
-          for (let i = 0; i < Math.min(count, 4); i++)spawnEnemy();
-        }
-
-        bullets.forEach(b => { b.x += (b.vx || 0) * dt; b.y += (b.vy || -600) * dt; });
-        bullets = bullets.filter(b => b.y > -10 && b.x > -10 && b.x < CW + 10);
-        enemies.forEach(e => {
-          e.y += (30 + stage * 16 + e.spd * 8) * dt;
-          if (stage >= 3) e.x += Math.sin(timestamp * 0.002 + e.zig) * stage * 5 * dt;
-          e.x = Math.max(0, Math.min(CW - e.w, e.x));
-        });
-        powerTimer += dt;
-        if (powerTimer > Math.max(2.2, 3.8 - stage * 0.08)) {
-          powers.push({ x: Math.random() * (CW - 20), y: -10, type: powerTypes[Math.floor(Math.random() * powerTypes.length)] });
-          powerTimer = 0;
-        }
-
-        bullets.forEach(b => {
-          enemies.forEach(e => {
-            if (!b.hit && !e.hit && b.x < e.x + e.w && b.x + b.w > e.x && b.y < e.y + e.h && b.y + b.h > e.y) {
-              e.hp--;
-              if (e.hp <= 0) {
-                e.hit = true;
-                combo++; comboTimer = 2;
-                const mult = combo > 1 ? combo : 1;
-                sc += 10 * mult; score = sc; scoreEl.textContent = sc;
-                spawnParticles(e.x + e.w / 2, e.y + e.h / 2, 10, 340, 120, 70);
-                popups.push({ x: e.x + e.w / 2, y: e.y, t: '+' + (10 * mult), life: 1, c: '255,107,157' });
-                hapticEvent(hapticPatterns.score, 120); sfx(660 + combo * 20, 0.03, 'sine', 0.04);
-              }
-              b.hit = true;
-            }
-          })
-        });
-        bullets = bullets.filter(b => !b.hit); enemies = enemies.filter(e => !e.hit);
-        enemies.forEach(e => {
-          if (!e.hit && px < e.x + e.w && px + 32 > e.x && py < e.y + e.h && py + 24 > e.y) {
-            if (shield) { shield = false; shieldT = 0; triggerShake(0.2); e.hit = true; hapticEvent(hapticPatterns.power, 0); sfx(760, 0.06, 'triangle', 0.06); return; }
-            lives--; triggerShake(0.35); e.hit = true; hapticEvent(hapticPatterns.damage, 0); sfx(220, 0.1, 'sawtooth', 0.06);
-            if (lives <= 0) { alive = false; const nw = updateHS('shooter'); showGameOver(sc, nw); return; }
-          }
-        });
-        enemies = enemies.filter(e => !e.hit);
-        powers.forEach(p => {
-          p.y += 200 * dt;
-          if (px < p.x + 16 && px + 32 > p.x && py < p.y + 16 && py + 24 > p.y) {
-            if (p.type === 'rapid') { rapid = true; rapidT = 5; }
-            if (p.type === 'spread') { spread = true; spreadT = 5; }
-            if (p.type === 'shield') { shield = true; shieldT = 6.5; }
-            if (p.type === 'bomb') {
-              const bonus = combo > 1 ? combo : 1;
-              sc += enemies.length * 5 * bonus; score = sc; scoreEl.textContent = sc;
-              enemies.forEach(e => spawnParticles(e.x + e.w / 2, e.y + e.h / 2, 6, 0, 150, 50));
-              enemies = []; triggerShake(0.4); sfx(180, 0.12, 'sawtooth', 0.07);
-            }
-            if (p.type === 'life') lives = Math.min(5, lives + 1);
-            hapticEvent(hapticPatterns.power, 0);
-            sfx(880, 0.06, 'sine', 0.06); p.hit = true;
-          }
-        });
-        powers = powers.filter(p => !p.hit && p.y < CH + 10);
-        if (enemies.some(e => e.y > CH - 40)) { alive = false; const nw = updateHS('shooter'); showGameOver(sc, nw); return; }
-
-        // Screen shake
-        if (shakeDur > 0) {
-          shakeDur -= dt;
-          shakeX += (Math.random() - 0.5) * shakeDur * 30 * dt;
-          shakeY += (Math.random() - 0.5) * shakeDur * 30 * dt;
-          shakeX *= 0.88; shakeY *= 0.88;
-          ctx.save();
-          ctx.translate(shakeX, shakeY);
-        }
-
-        ctx.fillStyle = '#0d0221'; ctx.fillRect(0, 0, CW, CH);
-        for (let i = 0; i < 50; i++) {
-          ctx.fillStyle = `rgba(255,255,255,${0.02 + Math.sin(timestamp * 0.001 + i) * 0.015})`;
-          ctx.fillRect((i * 31) % CW, (i * 47) % CH, 1.5, 1.5);
-        }
-        // Player trail
-        trail.forEach((t, i) => {
-          const a = (1 - i / trail.length) * 0.25;
-          const s = (1 - i / trail.length) * 10 + 2;
-          ctx.fillStyle = `rgba(77,201,246,${a})`;
-          ctx.beginPath(); ctx.arc(t.x, t.y, s, 0, Math.PI * 2); ctx.fill();
-        });
-        enemies.forEach(e => {
-          ctx.fillStyle = '#ff6b9d'; ctx.shadowColor = '#ff6b9d'; ctx.shadowBlur = 6; ctx.fillRect(e.x, e.y, e.w, e.h); ctx.shadowBlur = 0;
-          ctx.fillStyle = '#c44dff'; ctx.fillRect(e.x + 4, e.y - 5, 18, 5);
-          ctx.fillStyle = '#fff'; ctx.fillRect(e.x + 6, e.y + 4, 4, 4); ctx.fillRect(e.x + 16, e.y + 4, 4, 4);
-          if (e.hp > 1) { ctx.fillStyle = '#ffdd4a'; ctx.font = '7px "Fredoka One"'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(e.hp, e.x + e.w / 2, e.y + e.h + 6); }
-        });
-        bullets.forEach(b => {
-          ctx.fillStyle = '#ffdd4a'; ctx.shadowColor = '#ffdd4a'; ctx.shadowBlur = 8;
-          ctx.fillRect(b.x, b.y, b.w, b.h); ctx.shadowBlur = 0;
-        });
-        ctx.fillStyle = '#4dc9f6'; ctx.shadowColor = '#4dc9f6'; ctx.shadowBlur = 10;
-        ctx.fillRect(px, py, 32, 24); ctx.shadowBlur = 0;
-        ctx.fillStyle = '#2980b9'; ctx.fillRect(px + 8, py - 8, 16, 8);
-        ctx.fillStyle = '#fff'; ctx.fillRect(px + 20, py + 4, 4, 4);
-        powers.forEach(p => {
-          const pc = { rapid: '#ffdd4a', spread: '#c44dff', shield: '#4dc9f6', bomb: '#ff6b9d', life: '#2ecc71' }[p.type] || '#fff';
-          ctx.fillStyle = pc; ctx.shadowColor = pc; ctx.shadowBlur = 8;
-          ctx.fillRect(p.x, p.y, 16, 16);
-          ctx.shadowBlur = 0;
-          ctx.fillStyle = '#fff'; ctx.font = '7px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-          ctx.fillText({ rapid: 'R', spread: 'S', shield: 'H', bomb: 'B', life: '+' }[p.type] || '?', p.x + 8, p.y + 9);
-        });
-        if (shield) { ctx.strokeStyle = 'rgba(77,201,246,0.75)'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(px + 16, py + 12, 24, 0, Math.PI * 2); ctx.stroke(); }
-        // Particles
-        particles.forEach(p => {
-          p.x += p.vx * dt; p.y += p.vy * dt; p.vy += (p.grav || 80) * dt;
-          p.life -= p.decay * dt;
-          const a = Math.max(0, p.life);
-          ctx.globalAlpha = a * 0.8;
-          ctx.fillStyle = `hsl(${p.hue},90%,60%)`;
-          ctx.shadowColor = `hsla(${p.hue},90%,60%,${a * 0.4})`;
-          ctx.shadowBlur = 3;
-          ctx.beginPath(); ctx.arc(p.x, p.y, p.size * Math.max(0.2, a), 0, Math.PI * 2); ctx.fill();
-        });
-        ctx.globalAlpha = 1; ctx.shadowBlur = 0;
-        particles = particles.filter(p => p.life > 0);
-        // Score popups
-        popups.forEach(p => {
-          p.y -= p.life * 40 * dt; p.life -= dt * 0.7;
-          ctx.font = '700 ' + (combo > 1 ? 14 : 12) + 'px "Nunito"'; ctx.textAlign = 'center';
-          ctx.fillStyle = `rgba(${p.c},${Math.max(0, p.life * 0.9)})`;
-          ctx.fillText(p.t, p.x, p.y);
-        });
-        popups = popups.filter(p => p.life > 0);
-        // HUD
-        ctx.font = '10px "Nunito"'; ctx.fillStyle = 'rgba(255,255,255,0.1)'; ctx.textAlign = 'left';
-        ctx.fillText('\u2764'.repeat(Math.max(0, lives)), 8, CH - 10);
-        ctx.fillStyle = 'rgba(255,255,255,0.14)'; ctx.textAlign = 'left'; ctx.fillText('STAGE ' + stage, 8, 14);
-        // Power-up timer bars
-        let powerY = 28;
-        const pwrList = [
-          { active: rapid, t: rapidT, max: 5, label: 'RAPID', color: '#ffdd4a' },
-          { active: spread, t: spreadT, max: 5, label: 'SPREAD', color: '#c44dff' },
-          { active: shield, t: shieldT, max: 6.5, label: 'SHIELD', color: '#4dc9f6' }
-        ];
-        pwrList.forEach(pw => {
-          if (!pw.active) return;
-          const bx = 8, bw = 50, bh = 3;
-          ctx.fillStyle = 'rgba(255,255,255,0.06)';
-          ctx.fillRect(bx, powerY, bw, bh);
-          ctx.fillStyle = pw.color;
-          ctx.fillRect(bx, powerY, (pw.t / pw.max) * bw, bh);
-          ctx.font = '6px "Nunito"';
-          ctx.fillStyle = pw.color;
-          ctx.textAlign = 'left';
-          ctx.fillText(pw.label, bx + bw + 4, powerY + 3);
-          powerY += 6;
-        });
-        // Combo indicator
-        if (combo > 1) {
-          ctx.font = '700 16px "Nunito"'; ctx.textAlign = 'center';
-          ctx.fillStyle = `rgba(255,107,157,${0.4 + Math.sin(Date.now() * 0.006) * 0.2})`;
-          ctx.shadowColor = 'rgba(255,107,157,0.3)'; ctx.shadowBlur = 8;
-          ctx.fillText(combo + 'x KILLS', CW / 2, CH - 12);
-          ctx.shadowBlur = 0;
-        }
-        // Restore from shake
-        if (shakeDur > 0 || Math.abs(shakeX) > 0.5 || Math.abs(shakeY) > 0.5) ctx.restore();
-        else if (shakeDur > -1) { shakeDur = 0; shakeX = 0; shakeY = 0; }
-
-        gameLoop = requestAnimationFrame(update);
-      }
-      gameLoop = requestAnimationFrame(update);
-      return () => { alive = false; cancelAnimationFrame(gameLoop); };
-    }
-
     // ==================== ASTRO RUNNER (dt) ====================
-    function initDino() {
+    function initAstroRunner() {
       const ch = getAstroChar();
       let dy = CH - 44, dvy = 0, sc = 0, alive = true, spawnT = 0, coinT = 0, jumping = false, powerT = 0;
       let obstacles = [], coins = [], groundY = CH - 24, frame = 0, distance = 0, scoreCarry = 0;
@@ -8716,7 +7747,7 @@ function resizeCanvas() {
             }
             spawnParticles(38, dy + 15, 18, 0, 150, 100);
             triggerShake(0.4);
-            alive = false; const nw = updateHS('dino'); showGameOver(sc, nw); return;
+            alive = false; const nw = updateHS('astro'); showGameOver(sc, nw); return;
           }
         });
         if (!alive) return;
@@ -8997,157 +8028,6 @@ function resizeCanvas() {
       return () => { alive = false; cancelAnimationFrame(gameLoop); };
     }
 
-    // ==================== BREAKOUT (dt) ====================
-    function initBreakout() {
-      const pw = 70, ph = 10; let px = CW / 2 - pw / 2;
-      let bx = CW / 2, by = CH - 50, bvx = 250, bvy = -280;
-      const br = 5, paddleY = CH - 48;
-      let lives = 3, sc = 0, alive = true, bricks = [];
-      const colors = ['#ff6b9d', '#c44dff', '#4dc9f6', '#ffdd4a', '#2ecc71'];
-      const cols = 10, rows = 5, bs = CW / cols;
-
-      for (let r = 0; r < rows; r++) {
-        for (let c = 0; c < cols; c++) {
-          if (Math.random() > 0.1)
-            bricks.push({ x: c * bs + 2, y: 20 + r * 18 + 2, w: bs - 4, h: 14, color: colors[r % colors.length], hp: r < 2 ? 2 : 1 });
-        }
-      }
-
-      function update(timestamp) {
-        if (!alive || !gameActive) return;
-        if (paused) { gameLoop = requestAnimationFrame(update); return; }
-        if (!lastTime) lastTime = timestamp;
-        const dt = Math.min((timestamp - lastTime) / 1000, 0.05); lastTime = timestamp;
-        if (!gameActive) return;
-
-        if (breakoutTouch.active) px = Math.max(0, Math.min(CW - pw, breakoutTouch.x - pw / 2));
-        else {
-          if (keys['ArrowLeft'] || keys['a']) px = Math.max(0, px - 500 * dt);
-          if (keys['ArrowRight'] || keys['d']) px = Math.min(CW - pw, px + 500 * dt);
-        }
-        const prevBx = bx, prevBy = by;
-        bx += bvx * dt; by += bvy * dt;
-        if (bx <= br || bx >= CW - br) bvx *= -1;
-        if (by <= br) bvy *= -1;
-        if (bvy > 0 && prevBy + br <= paddleY && by + br >= paddleY && bx + br >= px && bx - br <= px + pw) {
-          by = paddleY - br;
-          bvy = -Math.abs(bvy); const off = (bx - (px + pw / 2)) / (pw / 2);
-          bvx += off * 150; if (Math.abs(bvx) > 450) bvx = (bvx > 0 ? 450 : -450);
-          hapticEvent(hapticPatterns.score, 120);
-          sfx(440, 0.03, 'sine', 0.04);
-        }
-        if (by > CH) {
-          lives--; if (lives <= 0) { alive = false; const nw = updateHS('breakout'); showGameOver(sc, nw); return; }
-          hapticEvent(hapticPatterns.damage, 0);
-          bx = CW / 2; by = CH - 50; bvx = (Math.random() > 0.5 ? 200 : -200); bvy = -280; sfx(220, 0.08, 'sawtooth', 0.05);
-        }
-        bricks.forEach(b => {
-          if (!b.hit && bx > b.x && bx < b.x + b.w && by > b.y && by < b.y + b.h) {
-            b.hp--; if (b.hp <= 0) b.hit = true;
-            bvy *= -1; sc += 10; score = sc; scoreEl.textContent = sc;
-            hapticEvent(hapticPatterns.score, 90);
-            sfx(660, 0.03, 'sine', 0.04);
-          }
-        });
-        bricks = bricks.filter(b => !b.hit);
-        if (bricks.length === 0) {
-          sc += 50; score = sc; scoreEl.textContent = sc;
-          const nw = updateHS('breakout'); showGameOver(sc, nw); return;
-        }
-
-        ctx.fillStyle = '#0d0221'; ctx.fillRect(0, 0, CW, CH);
-        bricks.forEach(b => {
-          ctx.fillStyle = b.color; ctx.shadowColor = b.color; ctx.shadowBlur = 4;
-          ctx.fillRect(b.x, b.y, b.w, b.h); ctx.shadowBlur = 0;
-          ctx.fillStyle = 'rgba(255,255,255,0.1)'; ctx.fillRect(b.x + 2, b.y + 2, b.w - 4, 3);
-          if (b.hp > 1) {
-            ctx.fillStyle = '#fff'; ctx.font = '7px "Fredoka One"'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-            ctx.fillText(b.hp, b.x + b.w / 2, b.y + b.h / 2 + 1);
-          }
-        });
-        ctx.fillStyle = '#fff'; ctx.shadowColor = '#4dc9f6'; ctx.shadowBlur = 10;
-        ctx.fillRect(px, CH - 48, pw, ph); ctx.shadowBlur = 0;
-        ctx.fillStyle = 'rgba(255,255,255,0.08)'; ctx.fillRect(px + 4, CH - 48, pw - 8, 2);
-        ctx.fillStyle = '#ffdd4a'; ctx.shadowColor = '#ffdd4a'; ctx.shadowBlur = 12;
-        ctx.beginPath(); ctx.arc(bx, by, br, 0, Math.PI * 2); ctx.fill(); ctx.shadowBlur = 0;
-        ctx.font = '10px "Nunito"'; ctx.fillStyle = 'rgba(255,255,255,0.1)'; ctx.textAlign = 'left';
-        ctx.fillText('❤️'.repeat(lives), 6, CH - 10);
-        ctx.textAlign = 'right'; ctx.fillText(bricks.length + ' left', CW - 6, CH - 10);
-        gameLoop = requestAnimationFrame(update);
-      }
-      gameLoop = requestAnimationFrame(update);
-      return () => { alive = false; cancelAnimationFrame(gameLoop); };
-    }
-
-    // ==================== FLAPPY (dt) ====================
-    function initFlappy() {
-      let by = CH / 2, bvy = 0, sc = 0, alive = true, pipes = [], spawnT = 0, wasFlap = false;
-      const gw = 50, gap = 130, spd = 180;
-      const bx = 40, bs = 20;
-
-      function update(timestamp) {
-        if (!alive || !gameActive) return;
-        if (paused) { gameLoop = requestAnimationFrame(update); return; }
-        if (!lastTime) lastTime = timestamp;
-        const dt = Math.min((timestamp - lastTime) / 1000, 0.05); lastTime = timestamp;
-        if (!gameActive) return;
-
-        bvy += 700 * dt; by += bvy * dt;
-        const flapDown = keys[' '] || keys['ArrowUp'] || keys['w'];
-        if (flapDown && !wasFlap) { bvy = -380; hapticEvent(hapticPatterns.score, 140); sfx(440, 0.03, 'sine', 0.04); }
-        wasFlap = flapDown;
-        if (by > CH - 30 || by < -10) { alive = false; const nw = updateHS('flappy'); showGameOver(sc, nw); return; }
-        spawnT += dt;
-        if (spawnT > 2.2 - sc * 0.006) {
-          const ph = 50 + Math.random() * (CH - gap - 80);
-          pipes.push({ x: CW + 10, y: ph, w: gw, h: CH, scored: false });
-          spawnT = 0;
-        }
-        pipes.forEach(p => p.x -= spd * dt);
-        pipes = pipes.filter(p => p.x > -gw);
-        pipes.forEach(p => {
-          if (!p.scored && p.x + gw < bx) {
-            sc += 10; score = sc; scoreEl.textContent = sc; p.scored = true;
-            hapticEvent(hapticPatterns.power, 0);
-            sfx(660, 0.04, 'sine', 0.05);
-          }
-          if (bx > p.x && bx < p.x + gw && (by < p.y || by > p.y + gap)) {
-            alive = false;
-            const nw = updateHS('flappy'); showGameOver(sc, nw); return;
-          }
-        });
-
-        ctx.fillStyle = '#0d0221'; ctx.fillRect(0, 0, CW, CH);
-        ctx.fillStyle = 'rgba(255,255,255,0.02)'; ctx.fillRect(0, CH - 30, CW, 2);
-        ctx.fillStyle = 'rgba(255,255,255,0.01)'; ctx.fillRect(0, CH - 25, CW, 1);
-        pipes.forEach(p => {
-          ctx.fillStyle = '#2ecc71'; ctx.shadowColor = '#2ecc71'; ctx.shadowBlur = 4;
-          ctx.fillRect(p.x, 0, p.w, p.y); ctx.shadowBlur = 0;
-          ctx.fillStyle = '#27ae60'; ctx.fillRect(p.x - 4, p.y - 20, p.w + 8, 20);
-          ctx.fillStyle = '#2ecc71'; ctx.fillRect(p.x, p.y + gap, p.w, CH - (p.y + gap));
-          ctx.fillStyle = '#27ae60'; ctx.fillRect(p.x - 4, p.y + gap, p.w + 8, 20);
-          ctx.fillStyle = 'rgba(255,255,255,0.04)'; ctx.fillRect(p.x + 4, 0, 6, p.y);
-          ctx.fillRect(p.x + 4, p.y + gap, 6, CH - (p.y + gap));
-        });
-        const tilt = Math.min(Math.max(bvy * 2.5, -30), 30);
-        const hue = (Date.now() * 0.05) % 360;
-        ctx.save(); ctx.translate(bx, by); ctx.rotate(tilt * Math.PI / 180);
-        ctx.fillStyle = `hsl(${hue},80%,60%)`; ctx.shadowColor = `hsl(${hue},80%,60%)`; ctx.shadowBlur = 8;
-        ctx.beginPath(); ctx.ellipse(0, 0, bs / 2, bs / 2, 0, 0, Math.PI * 2); ctx.fill(); ctx.shadowBlur = 0;
-        ctx.fillStyle = `hsl(${hue + 20},80%,50%)`; ctx.beginPath(); ctx.ellipse(-2, 0, bs / 2 - 2, bs / 2 - 1, 0, 0, Math.PI * 2); ctx.fill();
-        ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(3, -2, 3, 0, Math.PI * 2); ctx.fill();
-        ctx.fillStyle = '#333'; ctx.beginPath(); ctx.arc(4, -2, 1.5, 0, Math.PI * 2); ctx.fill();
-        ctx.fillStyle = '#e74c3c'; ctx.beginPath(); ctx.moveTo(bs / 2 + 2, 0); ctx.lineTo(bs / 2 + 8, -2); ctx.lineTo(bs / 2 + 8, 2); ctx.fill();
-        ctx.restore();
-        const wf = Math.sin(timestamp * 0.1) * 0.3 + 0.7;
-        ctx.fillStyle = `hsl(${hue + 40},80%,60%)`; ctx.shadowColor = `hsl(${hue + 40},80%,60%)`; ctx.shadowBlur = 4;
-        ctx.beginPath(); ctx.ellipse(bx - 6, by - 4, 8, 6 * wf, 0, 0, Math.PI * 2); ctx.fill(); ctx.shadowBlur = 0;
-        gameLoop = requestAnimationFrame(update);
-      }
-      gameLoop = requestAnimationFrame(update);
-      return () => { alive = false; cancelAnimationFrame(gameLoop); };
-    }
-
     // ==================== ALIEN SLINGSHOT (dt) ====================
     function initAliens() {
       const slingX = 88, slingY = CH - 34;
@@ -9386,6 +8266,21 @@ function resizeCanvas() {
         } else if (!canLaunch) {
           cooldown -= dt;
           if (cooldown <= 0) { canLaunch = true; nextType(); }
+        }
+
+        if (canLaunch && !proj && !dragging && (keys[' '] || keys['x'])) {
+          const t = getAlien();
+          const launchAngle = -75 * Math.PI / 180;
+          const power = 4.5;
+          proj = { x: slingX, y: slingTopY, vx: Math.cos(launchAngle) * power * 120, vy: Math.sin(launchAngle) * power * 120, t };
+          canLaunch = false; chain = 0;
+          hapticEvent([28, 36, 54], 0);
+          playTune([[440, 0.03, 0.05, 0], [660, 0.03, 0.05, 50]]);
+        }
+        if (canLaunch && !proj && !dragging && keys.nesB) {
+          keys.nesB = false;
+          nextType();
+          hapticEvent(18, 0);
         }
 
         // Screen shake
@@ -9891,10 +8786,12 @@ function resizeCanvas() {
     showStart();
     drawAstroLogo('astroLogoCard', 26 / 56);
 
-    console.log('🌈 RETRO GALAXY — 7 NEON GAMES');
-    console.log('🐍 Snake | 🏓 Pong | 👾 Shooter | 🏃 Dino | 🧱 Breakout | 🐤 Flappy | 👽 Alien Slingshot');
-    console.log('⌨️ 1-7=Switch  P=Pause  R=Restart  Click anywhere for sparks!');
+    console.log('🌈 NES HARNESS — ASTRO RUNNER, ALIEN SLINGSHOT, NES ROMS');
+    console.log('🏃 Astro Runner | 👽 Alien Slingshot | 📼 Install NES ROM');
+    console.log('⌨️ 1-2=Built-ins  3-0=Installed NES  P=Pause  R=Restart');
   </script>
 </body>
 
 </html>
+
+  
