@@ -1,6 +1,6 @@
 # Retro Galaxy - Neon Arcade
 
-Retro Galaxy is a single-file browser arcade built with plain HTML, CSS, and JavaScript. It includes multiple built-in retro mini-games plus NES ROM loading through a JSNES-based emulator.
+Retro Galaxy is a single-file browser arcade built with plain HTML, CSS, and JavaScript. It includes multiple built-in retro mini-games plus NES ROM loading through a JSNES-based emulator created by Vaishnav.
 
 ## Features
 
